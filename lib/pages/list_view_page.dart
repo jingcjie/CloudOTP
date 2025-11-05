@@ -15,6 +15,7 @@ import 'package:image/image.dart' as img;
 import 'package:cloud_otp/widgets/qr_code_dialog.dart';
 import 'package:cloud_otp/models/snackbar.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_otp/utils/l10n_extensions.dart';
 
 class ListViewPage extends StatefulWidget {
   const ListViewPage({super.key});
@@ -180,16 +181,17 @@ class _ListViewPageState extends State<ListViewPage> {
   Future<void> _addOtp(String uri) async {
     final controller = _controller;
     if (controller == null) return;
+    final l10n = context.l10n;
     try {
       await controller.addOtp(uri);
       if (!mounted) return;
       final message = controller.isLinked
-          ? 'OTP saved locally. Use Backup Data to sync cloud.'
-          : 'OTP saved locally.';
+          ? l10n.otpSavedWithBackupHint
+          : l10n.otpSaved;
       context.showBeautifulSnackBar(message: message, isError: false);
     } catch (e) {
       if (!mounted) return;
-      context.showBeautifulSnackBar(message: 'Failed to add OTP: $e', isError: true);
+      context.showBeautifulSnackBar(message: l10n.failedToAddOtp('$e'), isError: true);
     }
   }
 
@@ -206,7 +208,7 @@ class _ListViewPageState extends State<ListViewPage> {
       );
     } catch (e) {
       print('Error generating OTP: $e');
-      return 'Error';
+      return context.l10n.otpErrorPlaceholder;
     }
   }
 
@@ -220,7 +222,7 @@ class _ListViewPageState extends State<ListViewPage> {
     //   const SnackBar(content: Text('OTP copied to clipboard')),
     // );
 
-    context.showBeautifulSnackBar(message: 'OTP copied to clipboard.', isError: false);
+    context.showBeautifulSnackBar(message: context.l10n.otpCopied, isError: false);
   }
 
 
@@ -242,24 +244,25 @@ class _ListViewPageState extends State<ListViewPage> {
     try {
       await controller.removeOtpAt(index);
       if (!mounted) return;
-      context.showBeautifulSnackBar(message: 'Deleted successfully.', isError: false);
+      context.showBeautifulSnackBar(message: context.l10n.deletedSuccessfully, isError: false);
     } catch (e) {
       if (!mounted) return;
-      context.showBeautifulSnackBar(message: 'Failed to delete OTP: $e', isError: true);
+      context.showBeautifulSnackBar(
+        message: context.l10n.failedToDeleteOtp('$e'),
+        isError: true,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const GradientAppBar(
-        title: 'OTP List',
-        actions: [
-          // Add any action buttons here if needed
-        ],
+      appBar: GradientAppBar(
+        title: l10n.otpListTitle,
       ),
       body: otpItems.isEmpty
-          ? const Center(child: Text('No OTPs added yet. Tap the + button to add one.'))
+          ? Center(child: Text(l10n.emptyOtpListHint))
           : ListView.builder(
         itemCount: otpItems.length,
         itemBuilder: (context, index) {
@@ -308,11 +311,18 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('OTP: $code', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(
+                        l10n.otpCodeLabel(code),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Digits: ${otpItem.length}'),
-                      Text('Interval: ${otpItem.interval}s'),
-                      Text('Algorithm: ${otpItem.algorithm.toString().split('.').last}'),
+                      Text(l10n.otpDigitsLabel(otpItem.length)),
+                      Text(l10n.otpIntervalLabel(otpItem.interval)),
+                      Text(
+                        l10n.otpAlgorithmLabel(
+                          otpItem.algorithm.toString().split('.').last,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       LinearProgressIndicator(
                         value: progress.clamp(0.0, 1.0).toDouble(),
@@ -348,12 +358,12 @@ class _ListViewPageState extends State<ListViewPage> {
         children: [
           SpeedDialChild(
             child: const Icon(Icons.input),
-            label: 'Manual Input',
+            label: l10n.manualInput,
             onTap: _manualInput,
           ),
           SpeedDialChild(
             child: const Icon(Icons.qr_code_scanner),
-            label: 'QR Scanner',
+            label: l10n.qrScanner,
             onTap: _qrScanner,
           ),
         ],
@@ -362,32 +372,33 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   void _manualInput() async {
+    final l10n = context.l10n;
     String? result = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (dialogContext) {
         String secret = '';
         String label = '';
         String issuer = '';
 
         return AlertDialog(
-          title: const Text('Manual Input'),
+          title: Text(l10n.manualInputTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: const InputDecoration(labelText: 'Secret'),
+                decoration: InputDecoration(labelText: l10n.secretFieldLabel),
                 onChanged: (value) {
                   secret = value;
                 },
               ),
               TextField(
-                decoration: const InputDecoration(labelText: 'Label'),
+                decoration: InputDecoration(labelText: l10n.labelFieldLabel),
                 onChanged: (value) {
                   label = value;
                 },
               ),
               TextField(
-                decoration: const InputDecoration(labelText: 'Issuer (optional)'),
+                decoration: InputDecoration(labelText: l10n.issuerFieldLabel),
                 onChanged: (value) {
                   issuer = value;
                 },
@@ -397,9 +408,9 @@ class _ListViewPageState extends State<ListViewPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(null);
+                Navigator.of(dialogContext).pop(null);
               },
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             TextButton(
               onPressed: () {
@@ -412,9 +423,9 @@ class _ListViewPageState extends State<ListViewPage> {
                     if (issuer.isNotEmpty) 'issuer': issuer,
                   },
                 );
-                Navigator.of(context).pop(uri.toString());
+                Navigator.of(dialogContext).pop(uri.toString());
               },
-              child: const Text('Save'),
+              child: Text(l10n.commonSave),
             ),
           ],
         );
@@ -445,7 +456,7 @@ class _ListViewPageState extends State<ListViewPage> {
         // ScaffoldMessenger.of(context).showSnackBar(
         //   const SnackBar(content: Text('Invalid OTP QR code')),
         // );
-        context.showBeautifulSnackBar(message: 'Invalid OTP QR code', isError: true);
+        context.showBeautifulSnackBar(message: context.l10n.invalidOtpQr, isError: true);
       }
     }
   }
@@ -498,12 +509,12 @@ class _ListViewPageState extends State<ListViewPage> {
 
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Scaffold(
+        builder: (routeContext) => Scaffold(
           appBar: AppBar(
-            title: const Text('Scan QR Code'),
+            title: Text(routeContext.l10n.scanQrCodeTitle),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(routeContext).pop(),
             ),
           ),
           body: MobileScanner(

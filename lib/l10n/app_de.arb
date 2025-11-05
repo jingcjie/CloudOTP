@@ -1,0 +1,253 @@
+{
+  "@@locale": "de",
+  "appTitle": "Cloud OTP",
+  "navList": "Liste",
+  "navSettings": "Einstellungen",
+  "scanQrCodeTitle": "QR-Code scannen",
+  "uriCopiedToClipboard": "URI in die Zwischenablage kopiert",
+  "copyUri": "URI kopieren",
+  "closeButtonLabel": "Schließen",
+  "otpSavedWithBackupHint": "OTP lokal gespeichert. Verwende \"Sicherung\", um mit der Cloud zu synchronisieren.",
+  "otpSaved": "OTP lokal gespeichert.",
+  "failedToAddOtp": "OTP konnte nicht hinzugefügt werden: {error}",
+  "@failedToAddOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpCopied": "OTP in die Zwischenablage kopiert.",
+  "deletedSuccessfully": "Erfolgreich gelöscht.",
+  "failedToDeleteOtp": "OTP konnte nicht gelöscht werden: {error}",
+  "@failedToDeleteOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpListTitle": "OTP-Liste",
+  "emptyOtpListHint": "Noch keine OTPs hinzugefügt. Tippe auf die +-Taste, um eines hinzuzufügen.",
+  "otpCodeLabel": "OTP: {code}",
+  "@otpCodeLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "otpDigitsLabel": "Ziffern: {digits}",
+  "@otpDigitsLabel": {
+    "placeholders": {
+      "digits": {
+        "type": "int"
+      }
+    }
+  },
+  "otpIntervalLabel": "Intervall: {seconds}s",
+  "@otpIntervalLabel": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpAlgorithmLabel": "Algorithmus: {algorithm}",
+  "@otpAlgorithmLabel": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    }
+  },
+  "manualInput": "Manuelle Eingabe",
+  "qrScanner": "QR-Scanner",
+  "manualInputTitle": "Manuelle Eingabe",
+  "secretFieldLabel": "Secret",
+  "labelFieldLabel": "Bezeichnung",
+  "issuerFieldLabel": "Aussteller (optional)",
+  "commonCancel": "Abbrechen",
+  "commonSave": "Speichern",
+  "invalidOtpQr": "Ungültiger OTP-QR-Code",
+  "changePasswordTitle": "Passwort ändern",
+  "changePasswordNewLabel": "Neues Passwort",
+  "changePasswordConfirmLabel": "Neues Passwort bestätigen",
+  "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+  "passwordChangedSuccess": "Passwort erfolgreich geändert.",
+  "unexpectedError": "Unerwarteter Fehler: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSubmit": "Bestätigen",
+  "confirmPullTitle": "Datenübernahme bestätigen",
+  "confirmPullMessage": "Dadurch werden lokal gespeicherte Daten überschrieben. Fortfahren?",
+  "cloudNoData": "Keine Daten in der Cloud vorhanden.",
+  "cloudPullSuccess": "Daten erfolgreich übernommen.",
+  "cloudPullFailed": "Daten konnten nicht übernommen werden: {error}",
+  "@cloudPullFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmBackupTitle": "Sicherung bestätigen",
+  "confirmBackupMessage": "Dadurch werden die Daten in der Cloud überschrieben. Fortfahren?",
+  "cloudBackupSuccess": "Daten erfolgreich gesichert.",
+  "cloudBackupFailed": "Daten konnten nicht gesichert werden: {error}",
+  "@cloudBackupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTitle": "Clouddaten löschen",
+  "confirmDeleteMessage": "Dadurch werden deine OTP-Daten dauerhaft aus der Cloud gelöscht. Fortfahren?",
+  "cloudDeleteSuccess": "Clouddaten gelöscht.",
+  "cloudDeleteFailed": "Clouddaten konnten nicht gelöscht werden: {error}",
+  "@cloudDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmUnlinkTitle": "Konto trennen",
+  "confirmUnlinkMessage": "Du bleibst im Offline-Modus. Fortfahren?",
+  "unlinkSuccess": "Konto getrennt. Du arbeitest jetzt offline.",
+  "unlinkFailed": "Konto konnte nicht getrennt werden: {error}",
+  "@unlinkFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noOtpToExport": "Keine OTP-Einträge zum Exportieren.",
+  "exportCancelled": "Export abgebrochen.",
+  "exportDownloadStarted": "Download gestartet: {filename}",
+  "@exportDownloadStarted": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSavedTo": "Exportiert nach {location}",
+  "@exportSavedTo": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export fehlgeschlagen: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unableToReadFile": "Ausgewählte Datei kann nicht gelesen werden.",
+  "invalidFileFormat": "Ungültiges Dateiformat.",
+  "fileDoesNotContainOtp": "Die ausgewählte Datei enthält keine OTP-Daten.",
+  "fileContainsInvalidOtpEntries": "Die Datei enthält ungültige OTP-Einträge.",
+  "fileContainsNoEntries": "Keine OTP-Einträge in der Datei gefunden.",
+  "importOptionsTitle": "Importoptionen",
+  "importOptionsMessage": "Möchtest du die importierten OTPs mit deiner aktuellen Liste zusammenführen oder sie vollständig ersetzen?",
+  "importMergeOption": "Zusammenführen",
+  "importReplaceOption": "Ersetzen",
+  "importReplaceSuccess": "OTP-Liste durch importierte Daten ersetzt.",
+  "importMergeSuccess": "Importierte OTP-Einträge zusammengeführt.",
+  "importFailed": "Import fehlgeschlagen: {error}",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonProceed": "Fortfahren",
+  "linkAccount": "Konto verknüpfen",
+  "pullData": "Daten abrufen",
+  "backupData": "Sicherung",
+  "themeModeTitle": "Designmodus",
+  "themeSystem": "System",
+  "themeLight": "Hell",
+  "themeDark": "Dunkel",
+  "languageSettingTitle": "Sprache",
+  "languageSettingSubtitle": "Wähle eine Anzeigesprache.",
+  "languageSystemDefault": "Systemstandard",
+  "languageEnglish": "Englisch",
+  "languageSpanish": "Spanisch",
+  "languageFrench": "Französisch",
+  "languageGerman": "Deutsch",
+  "languageChineseSimplified": "Chinesisch (vereinfacht)",
+  "exportData": "Daten exportieren",
+  "importData": "Daten importieren",
+  "deleteAllCloudData": "Alle Clouddaten löschen",
+  "unlinkAccount": "Konto trennen",
+  "aboutTitle": "Über CloudOTP",
+  "aboutDescription": "CloudOTP ist ein Open-Source-Authenticator, der deine OTP-Geheimnisse mit optionaler Cloud-Synchronisation schützt.",
+  "viewOnGithub": "Auf GitHub ansehen",
+  "couldNotOpenRepository": "Repository konnte nicht geöffnet werden.",
+  "offlineMode": "Offline-Modus",
+  "connectedTo": "Verbunden mit",
+  "workingOffline": "Offline arbeiten",
+  "linkedBadge": "Verbunden",
+  "linkPromptTitle": "Cloud-Konto verknüpfen",
+  "linkPromptDescription": "Deine OTP-Geheimnisse werden lokal gespeichert. Verknüpfe ein Cloud-Konto, um sichere Backups zu ermöglichen.",
+  "linkNow": "Jetzt verknüpfen",
+  "commonUnknown": "unbekannt",
+  "cloudAccountLinkedAs": "Cloud-Konto verknüpft als {email}",
+  "@cloudAccountLinkedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountLinkedSuccessfully": "Konto erfolgreich verknüpft.",
+  "accountCreatedCheckEmail": "Konto erstellt. Überprüfe deine E-Mail, um zu bestätigen.",
+  "authenticationFailed": "Authentifizierung fehlgeschlagen: {error}",
+  "@authenticationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "useCloudDataTitle": "Clouddaten verwenden?",
+  "useCloudDataMessage": "Die Cloud-Sicherung enthält {remoteCount} Element(e). Möchtest du deine lokalen Einträge mit den Clouddaten ersetzen?",
+  "@useCloudDataMessage": {
+    "placeholders": {
+      "remoteCount": {
+        "type": "int"
+      }
+    }
+  },
+  "keepLocalButton": "Lokal behalten",
+  "useCloudDataButton": "Clouddaten verwenden",
+  "linkAccountButton": "Konto verknüpfen",
+  "createAccountButton": "Konto erstellen",
+  "linkCloudAccountTitle": "Cloud-Konto verknüpfen",
+  "createCloudAccountTitle": "Cloud-Konto erstellen",
+  "linkCloudAccountSubtitle": "Melde dich an, um deine OTP-Geheimnisse sicher zu synchronisieren.",
+  "createCloudAccountSubtitle": "Erstelle ein Konto, um sichere Backups zu ermöglichen.",
+  "emailFieldLabel": "E-Mail",
+  "enterYourEmail": "Gib deine E-Mail ein",
+  "passwordFieldLabel": "Passwort",
+  "enterYourPassword": "Gib dein Passwort ein",
+  "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein",
+  "needAccountSignUp": "Noch kein Konto? Registrieren",
+  "haveAccountSignIn": "Bereits ein Konto? Anmelden",
+  "continueOffline": "Offline fortfahren",
+  "otpErrorPlaceholder": "Fehler"
+}

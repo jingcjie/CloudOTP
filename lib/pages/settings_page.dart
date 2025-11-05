@@ -5,13 +5,16 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/account_link_controller.dart';
 import '../models/snackbar.dart';
 import '../models/theme_provider.dart';
+import '../models/locale_provider.dart';
 import '../utils/constants.dart';
 import '../utils/file_saver.dart';
 import '../utils/file_loader.dart';
+import '../utils/l10n_extensions.dart';
 import 'auth_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -33,36 +36,37 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _changePassword(BuildContext context) async {
+    final l10n = context.l10n;
     final navigator = Navigator.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Change Password'),
+        title: Text(l10n.changePasswordTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _newPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'New Password'),
+              decoration: InputDecoration(labelText: l10n.changePasswordNewLabel),
             ),
             TextField(
               controller: _confirmPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Confirm New Password'),
+              decoration: InputDecoration(labelText: l10n.changePasswordConfirmLabel),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => navigator.pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () async {
               if (_newPasswordController.text != _confirmPasswordController.text) {
                 context.showBeautifulSnackBar(
-                  message: 'Passwords do not match.',
+                  message: l10n.passwordMismatch,
                   isError: true,
                 );
                 return;
@@ -73,7 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 );
                 if (mounted) {
                   context.showBeautifulSnackBar(
-                    message: 'Password changed successfully.',
+                    message: l10n.passwordChangedSuccess,
                     isError: false,
                   );
                   navigator.pop();
@@ -81,13 +85,13 @@ class _SettingsPageState extends State<SettingsPage> {
               } catch (error) {
                 if (mounted) {
                   context.showBeautifulSnackBar(
-                    message: 'Unexpected error: $error',
+                    message: l10n.unexpectedError('$error'),
                     isError: true,
                   );
                 }
               }
             },
-            child: const Text('Submit'),
+            child: Text(l10n.commonSubmit),
           ),
         ],
       ),
@@ -95,10 +99,11 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _handlePull(AccountLinkController controller) async {
+    final l10n = context.l10n;
     final confirm = await _confirmAction(
       context,
-      title: 'Confirm Pull Data',
-      message: 'This will overwrite the data stored locally. Continue?',
+      title: l10n.confirmPullTitle,
+      message: l10n.confirmPullMessage,
     );
     if (confirm != true) return;
 
@@ -107,29 +112,30 @@ class _SettingsPageState extends State<SettingsPage> {
       if (!mounted) return;
       if (remoteData.isEmpty) {
         context.showBeautifulSnackBar(
-          message: 'No data available in the cloud.',
+          message: l10n.cloudNoData,
           isError: false,
         );
       } else {
         context.showBeautifulSnackBar(
-          message: 'Data pulled successfully.',
+          message: l10n.cloudPullSuccess,
           isError: false,
         );
       }
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to pull data: $error',
+        message: l10n.cloudPullFailed('$error'),
         isError: true,
       );
     }
   }
 
   Future<void> _handleBackup(AccountLinkController controller) async {
+    final l10n = context.l10n;
     final confirm = await _confirmAction(
       context,
-      title: 'Confirm Backup Data',
-      message: 'This will overwrite the data stored in the cloud. Continue?',
+      title: l10n.confirmBackupTitle,
+      message: l10n.confirmBackupMessage,
     );
     if (confirm != true) return;
 
@@ -137,23 +143,24 @@ class _SettingsPageState extends State<SettingsPage> {
       await controller.pushToCloud();
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Data backed up successfully.',
+        message: l10n.cloudBackupSuccess,
         isError: false,
       );
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to backup data: $error',
+        message: l10n.cloudBackupFailed('$error'),
         isError: true,
       );
     }
   }
 
   Future<void> _handleDelete(AccountLinkController controller) async {
+    final l10n = context.l10n;
     final confirm = await _confirmAction(
       context,
-      title: 'Delete Cloud Data',
-      message: 'This will permanently delete your OTP data from the cloud. Continue?',
+      title: l10n.confirmDeleteTitle,
+      message: l10n.confirmDeleteMessage,
     );
     if (confirm != true) return;
 
@@ -161,23 +168,24 @@ class _SettingsPageState extends State<SettingsPage> {
       await controller.clearCloudData();
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Cloud data cleared.',
+        message: l10n.cloudDeleteSuccess,
         isError: false,
       );
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to clear cloud data: $error',
+        message: l10n.cloudDeleteFailed('$error'),
         isError: true,
       );
     }
   }
 
   Future<void> _handleUnlink(AccountLinkController controller) async {
+    final l10n = context.l10n;
     final confirm = await _confirmAction(
       context,
-      title: 'Unlink Account',
-      message: 'You will remain in offline mode. Continue?',
+      title: l10n.confirmUnlinkTitle,
+      message: l10n.confirmUnlinkMessage,
     );
     if (confirm != true) return;
 
@@ -185,22 +193,23 @@ class _SettingsPageState extends State<SettingsPage> {
       await controller.unlinkAccount();
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Account unlinked. You are now working offline.',
+        message: l10n.unlinkSuccess,
         isError: false,
       );
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to unlink account: $error',
+        message: l10n.unlinkFailed('$error'),
         isError: true,
       );
     }
   }
 
   Future<void> _handleExport(AccountLinkController controller) async {
+    final l10n = context.l10n;
     if (controller.otpUris.isEmpty) {
       context.showBeautifulSnackBar(
-        message: 'No OTP entries to export.',
+        message: l10n.noOtpToExport,
         isError: false,
       );
       return;
@@ -217,13 +226,13 @@ class _SettingsPageState extends State<SettingsPage> {
       if (!mounted) return;
       if (savedLocation == null) {
         context.showBeautifulSnackBar(
-          message: 'Export cancelled.',
+          message: l10n.exportCancelled,
           isError: false,
         );
       } else {
         final message = kIsWeb
-            ? 'Download started: $defaultFileName'
-            : 'Exported to $savedLocation';
+            ? l10n.exportDownloadStarted(defaultFileName)
+            : l10n.exportSavedTo(savedLocation);
         context.showBeautifulSnackBar(
           message: message,
           isError: false,
@@ -232,13 +241,14 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to export: $error',
+        message: l10n.exportFailed('$error'),
         isError: true,
       );
     }
   }
 
   Future<void> _handleImport(AccountLinkController controller) async {
+    final l10n = context.l10n;
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -257,7 +267,7 @@ class _SettingsPageState extends State<SettingsPage> {
         fileContents = utf8.decode(file.bytes!);
       } else {
         context.showBeautifulSnackBar(
-          message: 'Unable to read selected file.',
+          message: l10n.unableToReadFile,
           isError: true,
         );
         return;
@@ -268,7 +278,7 @@ class _SettingsPageState extends State<SettingsPage> {
         decoded = jsonDecode(fileContents);
       } catch (_) {
         context.showBeautifulSnackBar(
-          message: 'Invalid file format.',
+          message: l10n.invalidFileFormat,
           isError: true,
         );
         return;
@@ -276,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
       if (decoded is! List) {
         context.showBeautifulSnackBar(
-          message: 'Selected file does not contain OTP data.',
+          message: l10n.fileDoesNotContainOtp,
           isError: true,
         );
         return;
@@ -288,7 +298,7 @@ class _SettingsPageState extends State<SettingsPage> {
           parsed.add(entry);
         } else {
           context.showBeautifulSnackBar(
-            message: 'File contains invalid OTP entries.',
+            message: l10n.fileContainsInvalidOtpEntries,
             isError: true,
           );
           return;
@@ -297,7 +307,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
       if (parsed.isEmpty) {
         context.showBeautifulSnackBar(
-          message: 'No OTP entries found in file.',
+          message: l10n.fileContainsNoEntries,
           isError: false,
         );
         return;
@@ -306,22 +316,20 @@ class _SettingsPageState extends State<SettingsPage> {
       final choice = await showDialog<_ImportChoice>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Import options'),
-          content: const Text(
-            'Would you like to merge the imported OTPs with your existing list, or replace the current list entirely?',
-          ),
+          title: Text(l10n.importOptionsTitle),
+          content: Text(l10n.importOptionsMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(_ImportChoice.merge),
-              child: const Text('Merge'),
+              child: Text(l10n.importMergeOption),
             ),
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(_ImportChoice.replace),
-              child: const Text('Replace'),
+              child: Text(l10n.importReplaceOption),
             ),
           ],
         ),
@@ -335,7 +343,7 @@ class _SettingsPageState extends State<SettingsPage> {
         await controller.replaceLocalWith(parsed);
         if (mounted) {
           context.showBeautifulSnackBar(
-            message: 'OTP list replaced with imported data.',
+            message: l10n.importReplaceSuccess,
             isError: false,
           );
         }
@@ -343,7 +351,7 @@ class _SettingsPageState extends State<SettingsPage> {
         await controller.mergeWith(parsed);
         if (mounted) {
           context.showBeautifulSnackBar(
-            message: 'Imported OTP entries merged.',
+            message: l10n.importMergeSuccess,
             isError: false,
           );
         }
@@ -351,7 +359,7 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Failed to import: $error',
+        message: l10n.importFailed('$error'),
         isError: true,
       );
     }
@@ -364,20 +372,23 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Proceed'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) {
+        final l10n = dialogContext.l10n;
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.commonCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.commonProceed),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -385,7 +396,18 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final controller = context.watch<AccountLinkController>();
+    final localeProvider = context.watch<LocaleProvider>();
+    final l10n = context.l10n;
     final isLinked = controller.isLinked;
+    final currentLanguageCode = localeProvider.locale?.toLanguageTag() ?? 'system';
+    final languageOptions = <String, String>{
+      'system': l10n.languageSystemDefault,
+      'en': l10n.languageEnglish,
+      'es': l10n.languageSpanish,
+      'fr': l10n.languageFrench,
+      'de': l10n.languageGerman,
+      'zh': l10n.languageChineseSimplified,
+    };
 
     return Scaffold(
       floatingActionButton: isLinked
@@ -393,23 +415,23 @@ class _SettingsPageState extends State<SettingsPage> {
           : FloatingActionButton.extended(
               onPressed: () => AccountLinkSheet.show(context),
               icon: const Icon(Icons.cloud_queue),
-              label: const Text('Link account'),
+              label: Text(l10n.linkAccount),
             ),
       body: ListView(
         children: [
           _buildTopBanner(context, controller),
           if (!isLinked) _buildLinkPrompt(context),
-          if (isLinked) _buildCloudStatusRow(controller),
+          if (isLinked) _buildCloudStatusRow(context, controller),
           if (isLinked)
             ListTile(
               leading: const Icon(Icons.lock),
-              title: const Text('Change Password'),
+              title: Text(l10n.changePasswordTitle),
               onTap: () => _changePassword(context),
             ),
           if (isLinked)
             ListTile(
               leading: const Icon(Icons.cloud_download),
-              title: const Text('Pull Data'),
+              title: Text(l10n.pullData),
               onTap: controller.isLoading ? null : () => _handlePull(controller),
               trailing: controller.isLoading
                   ? const SizedBox(
@@ -422,72 +444,167 @@ class _SettingsPageState extends State<SettingsPage> {
           if (isLinked)
             ListTile(
               leading: const Icon(Icons.backup),
-              title: const Text('Backup Data'),
+              title: Text(l10n.backupData),
               onTap: controller.isLoading ? null : () => _handleBackup(controller),
             ),
           ListTile(
             leading: const Icon(Icons.brightness_medium),
-            title: const Text('Theme Mode'),
-            trailing: DropdownButton<ThemeMode>(
-              value: themeProvider.themeMode,
-              onChanged: (ThemeMode? newValue) {
-                if (newValue != null) {
-                  themeProvider.setThemeMode(newValue);
-                }
-              },
-              items: const [
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text('System'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.light,
-                  child: Text('Light'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.dark,
-                  child: Text('Dark'),
-                ),
-              ],
+            title: Text(l10n.themeModeTitle),
+            trailing: DropdownButtonHideUnderline(
+              child: DropdownButton<ThemeMode>(
+                value: themeProvider.themeMode,
+                borderRadius: BorderRadius.circular(12),
+                onChanged: (ThemeMode? newValue) {
+                  if (newValue != null) {
+                    themeProvider.setThemeMode(newValue);
+                  }
+                },
+                items: [
+                  DropdownMenuItem(
+                    value: ThemeMode.system,
+                    child: Text(l10n.themeSystem),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.light,
+                    child: Text(l10n.themeLight),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.dark,
+                    child: Text(l10n.themeDark),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(l10n.languageSettingTitle),
+            subtitle: Text(l10n.languageSettingSubtitle),
+            trailing: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: languageOptions.containsKey(currentLanguageCode)
+                    ? currentLanguageCode
+                    : 'system',
+                borderRadius: BorderRadius.circular(12),
+                onChanged: (String? value) {
+                  if (value == null) return;
+                  if (value == 'system') {
+                    localeProvider.setLocale(null);
+                  } else {
+                    final selectedLocale = LocaleProvider.supportedLocales.firstWhere(
+                      (locale) => locale.toLanguageTag() == value,
+                      orElse: () => LocaleProvider.supportedLocales.first,
+                    );
+                    localeProvider.setLocale(selectedLocale);
+                  }
+                },
+                items: languageOptions.entries
+                    .map(
+                      (entry) => DropdownMenuItem<String>(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.file_upload),
-            title: const Text('Export Data'),
+            title: Text(l10n.exportData),
             onTap: () => _handleExport(controller),
           ),
           ListTile(
             leading: const Icon(Icons.file_download),
-            title: const Text('Import Data'),
+            title: Text(l10n.importData),
             onTap: () => _handleImport(controller),
           ),
           if (isLinked)
             ListTile(
               leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text(
-                'Delete All Cloud Data',
-                style: TextStyle(color: Colors.red),
+              title: Text(
+                l10n.deleteAllCloudData,
+                style: const TextStyle(color: Colors.red),
               ),
               onTap: controller.isLoading ? null : () => _handleDelete(controller),
             ),
           if (isLinked)
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text(
-                'Unlink Account',
-                style: TextStyle(color: Colors.red),
+              title: Text(
+                l10n.unlinkAccount,
+                style: const TextStyle(color: Colors.red),
               ),
               onTap: controller.isLoading ? null : () => _handleUnlink(controller),
             ),
+          _buildAboutSection(context),
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
+  Widget _buildAboutSection(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.aboutTitle,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.aboutDescription,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.icon(
+                  onPressed: () => _openRepository(context),
+                  icon: const Icon(Icons.open_in_new),
+                  label: Text(l10n.viewOnGithub),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openRepository(BuildContext context) async {
+    final l10n = context.l10n;
+    final uri = Uri.parse('https://github.com/jingcjie/CloudOTP');
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      if (!launched) {
+        context.showBeautifulSnackBar(
+          message: l10n.couldNotOpenRepository,
+          isError: true,
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+      context.showBeautifulSnackBar(
+        message: l10n.unexpectedError('$error'),
+        isError: true,
+      );
+    }
+  }
+
   Widget _buildTopBanner(BuildContext context, AccountLinkController controller) {
+    final l10n = context.l10n;
     final isLinked = controller.isLinked;
-    final subtitle = isLinked ? controller.linkedEmail ?? '' : 'Offline mode';
+    final subtitle = isLinked ? controller.linkedEmail ?? '' : l10n.offlineMode;
 
     return Container(
       height: 200,
@@ -519,14 +636,14 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isLinked ? 'Connected to' : 'Working offline',
+                  isLinked ? l10n.connectedTo : l10n.workingOffline,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 16,
                   ),
                 ),
                 Text(
-                  subtitle.isEmpty ? 'Cloud OTP' : subtitle,
+                  subtitle.isEmpty ? l10n.appTitle : subtitle,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -543,9 +660,9 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Chip(
                 avatar: const Icon(Icons.cloud_done, color: Colors.white, size: 16),
                 backgroundColor: Colors.green.withOpacity(0.8),
-                label: const Text(
-                  'Linked',
-                  style: TextStyle(color: Colors.white),
+                label: Text(
+                  l10n.linkedBadge,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -555,6 +672,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildLinkPrompt(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -564,13 +682,13 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Link a cloud account',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.linkPromptTitle,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Your OTP secrets are stored locally. Link a cloud account to enable secure backups.',
+              Text(
+                l10n.linkPromptDescription,
               ),
               const SizedBox(height: 16),
               Align(
@@ -578,7 +696,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: TextButton.icon(
                   onPressed: () => AccountLinkSheet.show(context),
                   icon: const Icon(Icons.cloud_queue),
-                  label: const Text('Link now'),
+                  label: Text(l10n.linkNow),
                 ),
               ),
             ],
@@ -588,7 +706,9 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildCloudStatusRow(AccountLinkController controller) {
+  Widget _buildCloudStatusRow(BuildContext context, AccountLinkController controller) {
+    final l10n = context.l10n;
+    final email = controller.linkedEmail ?? l10n.commonUnknown;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -597,7 +717,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Cloud account linked as ${controller.linkedEmail ?? 'unknown'}',
+              l10n.cloudAccountLinkedAs(email),
             ),
           ),
         ],

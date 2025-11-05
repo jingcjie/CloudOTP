@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:cloud_otp/utils/l10n_extensions.dart';
 
 class QRCodeDialog extends StatelessWidget {
   final String uri;
@@ -10,6 +11,7 @@ class QRCodeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final l10n = context.l10n;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -40,7 +42,7 @@ class QRCodeDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Scan QR Code',
+                  l10n.scanQrCodeTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -55,11 +57,11 @@ class QRCodeDialog extends StatelessWidget {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: uri));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('URI copied to clipboard')),
+                          SnackBar(content: Text(l10n.uriCopiedToClipboard)),
                         );
                       },
                       icon: const Icon(Icons.copy),
-                      label: const Text('Copy URI'),
+                      label: Text(l10n.copyUri),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: isDarkMode ? Colors.black : Colors.white,
                         backgroundColor: isDarkMode ? Colors.white70 : Colors.blue,
@@ -68,7 +70,7 @@ class QRCodeDialog extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.close),
-                      label: const Text('Close'),
+                      label: Text(l10n.closeButtonLabel),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: isDarkMode ? Colors.black : Colors.white,
                         backgroundColor: isDarkMode ? Colors.white70 : Colors.red,

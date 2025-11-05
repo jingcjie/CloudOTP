@@ -5,10 +5,13 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cloud_otp/l10n/app_localizations.dart';
 import 'utils/constants.dart';
 import 'controllers/account_link_controller.dart';
 import 'pages/main_page.dart';
 import 'models/theme_provider.dart';
+import 'models/locale_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,19 +99,46 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider.value(value: widget.accountController),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, child) {
           return MaterialApp(
-            title: 'Cloud OTP',
+            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+            locale: localeProvider.locale,
+            supportedLocales: LocaleProvider.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              final forcedLocale = localeProvider.locale;
+              if (forcedLocale != null) {
+                return forcedLocale;
+              }
+              if (locale == null) {
+                return const Locale('en');
+              }
+              for (final supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              return const Locale('en');
+            },
             theme: ThemeData(
-              primarySwatch: Colors.green,
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               brightness: Brightness.light,
               useMaterial3: true,
             ),
             darkTheme: ThemeData(
-              primarySwatch: Colors.green,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.green,
+                brightness: Brightness.dark,
+              ),
               brightness: Brightness.dark,
               useMaterial3: true,
             ),

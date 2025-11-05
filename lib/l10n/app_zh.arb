@@ -1,0 +1,253 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Cloud OTP",
+  "navList": "列表",
+  "navSettings": "设置",
+  "scanQrCodeTitle": "扫描二维码",
+  "uriCopiedToClipboard": "URI 已复制到剪贴板",
+  "copyUri": "复制 URI",
+  "closeButtonLabel": "关闭",
+  "otpSavedWithBackupHint": "OTP 已在本地保存。请使用“备份数据”同步到云端。",
+  "otpSaved": "OTP 已在本地保存。",
+  "failedToAddOtp": "添加 OTP 失败：{error}",
+  "@failedToAddOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpCopied": "OTP 已复制到剪贴板。",
+  "deletedSuccessfully": "删除成功。",
+  "failedToDeleteOtp": "删除 OTP 失败：{error}",
+  "@failedToDeleteOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpListTitle": "OTP 列表",
+  "emptyOtpListHint": "尚未添加 OTP。点击 + 按钮添加。",
+  "otpCodeLabel": "OTP：{code}",
+  "@otpCodeLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "otpDigitsLabel": "位数：{digits}",
+  "@otpDigitsLabel": {
+    "placeholders": {
+      "digits": {
+        "type": "int"
+      }
+    }
+  },
+  "otpIntervalLabel": "间隔：{seconds}秒",
+  "@otpIntervalLabel": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpAlgorithmLabel": "算法：{algorithm}",
+  "@otpAlgorithmLabel": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    }
+  },
+  "manualInput": "手动输入",
+  "qrScanner": "二维码扫描",
+  "manualInputTitle": "手动输入",
+  "secretFieldLabel": "密钥",
+  "labelFieldLabel": "标签",
+  "issuerFieldLabel": "发行者（可选）",
+  "commonCancel": "取消",
+  "commonSave": "保存",
+  "invalidOtpQr": "无效的 OTP 二维码",
+  "changePasswordTitle": "修改密码",
+  "changePasswordNewLabel": "新密码",
+  "changePasswordConfirmLabel": "确认新密码",
+  "passwordMismatch": "两次输入的密码不一致。",
+  "passwordChangedSuccess": "密码修改成功。",
+  "unexpectedError": "发生意外错误：{error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSubmit": "提交",
+  "confirmPullTitle": "确认获取数据",
+  "confirmPullMessage": "这将覆盖本地存储的数据。是否继续？",
+  "cloudNoData": "云端没有可用数据。",
+  "cloudPullSuccess": "数据获取成功。",
+  "cloudPullFailed": "获取数据失败：{error}",
+  "@cloudPullFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmBackupTitle": "确认备份数据",
+  "confirmBackupMessage": "这将覆盖云端存储的数据。是否继续？",
+  "cloudBackupSuccess": "数据备份成功。",
+  "cloudBackupFailed": "备份数据失败：{error}",
+  "@cloudBackupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTitle": "删除云端数据",
+  "confirmDeleteMessage": "这将永久删除云端中的 OTP 数据。是否继续？",
+  "cloudDeleteSuccess": "云端数据已清除。",
+  "cloudDeleteFailed": "清除云端数据失败：{error}",
+  "@cloudDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmUnlinkTitle": "取消账户关联",
+  "confirmUnlinkMessage": "将保持离线模式。是否继续？",
+  "unlinkSuccess": "账户已取消关联，现在处于离线模式。",
+  "unlinkFailed": "取消关联失败：{error}",
+  "@unlinkFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noOtpToExport": "没有可导出的 OTP 条目。",
+  "exportCancelled": "导出已取消。",
+  "exportDownloadStarted": "开始下载：{filename}",
+  "@exportDownloadStarted": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSavedTo": "已导出到 {location}",
+  "@exportSavedTo": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "导出失败：{error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unableToReadFile": "无法读取所选文件。",
+  "invalidFileFormat": "文件格式无效。",
+  "fileDoesNotContainOtp": "所选文件不包含 OTP 数据。",
+  "fileContainsInvalidOtpEntries": "文件中包含无效的 OTP 条目。",
+  "fileContainsNoEntries": "文件中未找到 OTP 条目。",
+  "importOptionsTitle": "导入选项",
+  "importOptionsMessage": "要将导入的 OTP 与现有列表合并，还是完全替换现有列表？",
+  "importMergeOption": "合并",
+  "importReplaceOption": "替换",
+  "importReplaceSuccess": "已使用导入数据替换 OTP 列表。",
+  "importMergeSuccess": "已合并导入的 OTP 条目。",
+  "importFailed": "导入失败：{error}",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonProceed": "继续",
+  "linkAccount": "关联账户",
+  "pullData": "获取数据",
+  "backupData": "备份数据",
+  "themeModeTitle": "主题模式",
+  "themeSystem": "系统",
+  "themeLight": "浅色",
+  "themeDark": "深色",
+  "languageSettingTitle": "语言",
+  "languageSettingSubtitle": "选择显示语言。",
+  "languageSystemDefault": "系统默认",
+  "languageEnglish": "英语",
+  "languageSpanish": "西班牙语",
+  "languageFrench": "法语",
+  "languageGerman": "德语",
+  "languageChineseSimplified": "简体中文",
+  "exportData": "导出数据",
+  "importData": "导入数据",
+  "deleteAllCloudData": "删除所有云端数据",
+  "unlinkAccount": "取消关联",
+  "aboutTitle": "关于 CloudOTP",
+  "aboutDescription": "CloudOTP 是一款开源验证器，可通过可选的云同步保护你的 OTP 密钥。",
+  "viewOnGithub": "在 GitHub 查看",
+  "couldNotOpenRepository": "无法打开仓库。",
+  "offlineMode": "离线模式",
+  "connectedTo": "已连接到",
+  "workingOffline": "离线工作",
+  "linkedBadge": "已关联",
+  "linkPromptTitle": "关联云账户",
+  "linkPromptDescription": "你的 OTP 密钥保存在本地。关联云账户以启用安全备份。",
+  "linkNow": "立即关联",
+  "commonUnknown": "未知",
+  "cloudAccountLinkedAs": "云账户已关联为 {email}",
+  "@cloudAccountLinkedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountLinkedSuccessfully": "账户关联成功。",
+  "accountCreatedCheckEmail": "账户已创建。请检查邮箱以完成确认。",
+  "authenticationFailed": "认证失败：{error}",
+  "@authenticationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "useCloudDataTitle": "使用云端数据？",
+  "useCloudDataMessage": "云端备份包含 {remoteCount} 个项目。是否用云端数据替换本地条目？",
+  "@useCloudDataMessage": {
+    "placeholders": {
+      "remoteCount": {
+        "type": "int"
+      }
+    }
+  },
+  "keepLocalButton": "保留本地",
+  "useCloudDataButton": "使用云端数据",
+  "linkAccountButton": "关联账户",
+  "createAccountButton": "创建账户",
+  "linkCloudAccountTitle": "关联云账户",
+  "createCloudAccountTitle": "创建云账户",
+  "linkCloudAccountSubtitle": "登录以安全同步你的 OTP 密钥。",
+  "createCloudAccountSubtitle": "创建账户以启用安全备份。",
+  "emailFieldLabel": "邮箱",
+  "enterYourEmail": "请输入邮箱",
+  "passwordFieldLabel": "密码",
+  "enterYourPassword": "请输入密码",
+  "passwordTooShort": "密码至少需要 6 个字符",
+  "needAccountSignUp": "需要账户？立即注册",
+  "haveAccountSignIn": "已有账户？立即登录",
+  "continueOffline": "继续离线使用",
+  "otpErrorPlaceholder": "错误"
+}

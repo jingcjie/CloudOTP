@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   provider: ^6.1.2
   supabase_flutter: ^2.0.6
   crypto: ^3.0.3
@@ -44,6 +46,8 @@ dependencies:
   window_manager: ^0.4.2
   animations: ^2.0.11
   sign_in_with_apple: ^6.0.1
+  url_launcher: ^6.3.0
+  intl: ^0.20.2
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -98,6 +102,8 @@ msix_config:
 
 # The following section is specific to Flutter packages.
 flutter:
+
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

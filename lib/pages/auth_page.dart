@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/account_link_controller.dart';
 import '../models/snackbar.dart';
+import '../utils/l10n_extensions.dart';
 
 class AccountLinkSheet extends StatefulWidget {
   const AccountLinkSheet({super.key});
@@ -55,6 +56,7 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
     });
 
     final controller = context.read<AccountLinkController>();
+    final l10n = context.l10n;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -80,13 +82,13 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
       _passwordController.clear();
 
       final successMessage = _isLogin
-          ? 'Account linked successfully.'
-          : 'Account created. Check your email to confirm.';
+          ? l10n.accountLinkedSuccessfully
+          : l10n.accountCreatedCheckEmail;
       Navigator.of(context).pop(successMessage);
     } catch (error) {
       if (!mounted) return;
       context.showBeautifulSnackBar(
-        message: 'Authentication failed: $error',
+        message: l10n.authenticationFailed('$error'),
         isError: true,
       );
     } finally {
@@ -101,31 +103,33 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
   Future<bool?> _confirmOverride(int remoteCount) {
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Use cloud data?'),
-        content: Text(
-          'Cloud backup contains $remoteCount item(s). '
-          'Do you want to replace your local entries with the cloud data?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Keep local'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Use cloud data'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) {
+        final l10n = dialogContext.l10n;
+        return AlertDialog(
+          title: Text(l10n.useCloudDataTitle),
+          content: Text(l10n.useCloudDataMessage(remoteCount)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.keepLocalButton),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.useCloudDataButton),
+            ),
+          ],
+        );
+      },
     );
   }
-
-  String get _submitButtonLabel => _isLogin ? 'Link Account' : 'Create Account';
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final submitButtonLabel = _isLogin
+        ? l10n.linkAccountButton
+        : l10n.createAccountButton;
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -143,32 +147,32 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
                     color: theme.colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                ),
               ),
+            ),
               const SizedBox(height: 24),
               Text(
-                _isLogin ? 'Link cloud account' : 'Create cloud account',
+                _isLogin ? l10n.linkCloudAccountTitle : l10n.createCloudAccountTitle,
                 style: theme.textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
                 _isLogin
-                    ? 'Sign in to sync your OTP secrets securely.'
-                    : 'Create an account to enable secure backups.',
+                    ? l10n.linkCloudAccountSubtitle
+                    : l10n.createCloudAccountSubtitle,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.emailFieldLabel,
+                  prefixIcon: const Icon(Icons.email_outlined),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Enter your email';
+                    return l10n.enterYourEmail;
                   }
                   return null;
                 },
@@ -178,7 +182,7 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
                 controller: _passwordController,
                 obscureText: _isObscure,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.passwordFieldLabel,
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
@@ -191,10 +195,10 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your password';
+                    return l10n.enterYourPassword;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return l10n.passwordTooShort;
                   }
                   return null;
                 },
@@ -214,7 +218,7 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(_submitButtonLabel),
+                    : Text(submitButtonLabel),
               ),
               const SizedBox(height: 12),
               TextButton(
@@ -227,14 +231,14 @@ class _AccountLinkSheetState extends State<AccountLinkSheet> {
                       },
                 child: Text(
                   _isLogin
-                      ? 'Need an account? Sign up'
-                      : 'Already have an account? Sign in',
+                      ? l10n.needAccountSignUp
+                      : l10n.haveAccountSignIn,
                 ),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Continue offline'),
+                child: Text(l10n.continueOffline),
               ),
               const SizedBox(height: 8),
             ],

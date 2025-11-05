@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings_page.dart';
 import 'list_view_page.dart';
+import '../utils/l10n_extensions.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -38,14 +39,14 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'List',
+            icon: const Icon(Icons.list),
+            label: context.l10n.navList,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: const Icon(Icons.settings),
+            label: context.l10n.navSettings,
           ),
         ],
         currentIndex: _selectedIndex,

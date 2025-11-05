@@ -1,0 +1,253 @@
+{
+  "@@locale": "en",
+  "appTitle": "Cloud OTP",
+  "navList": "List",
+  "navSettings": "Settings",
+  "scanQrCodeTitle": "Scan QR Code",
+  "uriCopiedToClipboard": "URI copied to clipboard",
+  "copyUri": "Copy URI",
+  "closeButtonLabel": "Close",
+  "otpSavedWithBackupHint": "OTP saved locally. Use Backup Data to sync cloud.",
+  "otpSaved": "OTP saved locally.",
+  "failedToAddOtp": "Failed to add OTP: {error}",
+  "@failedToAddOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpCopied": "OTP copied to clipboard.",
+  "deletedSuccessfully": "Deleted successfully.",
+  "failedToDeleteOtp": "Failed to delete OTP: {error}",
+  "@failedToDeleteOtp": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpListTitle": "OTP List",
+  "emptyOtpListHint": "No OTPs added yet. Tap the + button to add one.",
+  "otpCodeLabel": "OTP: {code}",
+  "@otpCodeLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "otpDigitsLabel": "Digits: {digits}",
+  "@otpDigitsLabel": {
+    "placeholders": {
+      "digits": {
+        "type": "int"
+      }
+    }
+  },
+  "otpIntervalLabel": "Interval: {seconds}s",
+  "@otpIntervalLabel": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpAlgorithmLabel": "Algorithm: {algorithm}",
+  "@otpAlgorithmLabel": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    }
+  },
+  "manualInput": "Manual Input",
+  "qrScanner": "QR Scanner",
+  "manualInputTitle": "Manual Input",
+  "secretFieldLabel": "Secret",
+  "labelFieldLabel": "Label",
+  "issuerFieldLabel": "Issuer (optional)",
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "invalidOtpQr": "Invalid OTP QR code",
+  "changePasswordTitle": "Change Password",
+  "changePasswordNewLabel": "New Password",
+  "changePasswordConfirmLabel": "Confirm New Password",
+  "passwordMismatch": "Passwords do not match.",
+  "passwordChangedSuccess": "Password changed successfully.",
+  "unexpectedError": "Unexpected error: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSubmit": "Submit",
+  "confirmPullTitle": "Confirm Pull Data",
+  "confirmPullMessage": "This will overwrite the data stored locally. Continue?",
+  "cloudNoData": "No data available in the cloud.",
+  "cloudPullSuccess": "Data pulled successfully.",
+  "cloudPullFailed": "Failed to pull data: {error}",
+  "@cloudPullFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmBackupTitle": "Confirm Backup Data",
+  "confirmBackupMessage": "This will overwrite the data stored in the cloud. Continue?",
+  "cloudBackupSuccess": "Data backed up successfully.",
+  "cloudBackupFailed": "Failed to back up data: {error}",
+  "@cloudBackupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTitle": "Delete Cloud Data",
+  "confirmDeleteMessage": "This will permanently delete your OTP data from the cloud. Continue?",
+  "cloudDeleteSuccess": "Cloud data cleared.",
+  "cloudDeleteFailed": "Failed to clear cloud data: {error}",
+  "@cloudDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmUnlinkTitle": "Unlink Account",
+  "confirmUnlinkMessage": "You will remain in offline mode. Continue?",
+  "unlinkSuccess": "Account unlinked. You are now working offline.",
+  "unlinkFailed": "Failed to unlink account: {error}",
+  "@unlinkFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noOtpToExport": "No OTP entries to export.",
+  "exportCancelled": "Export cancelled.",
+  "exportDownloadStarted": "Download started: {filename}",
+  "@exportDownloadStarted": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSavedTo": "Exported to {location}",
+  "@exportSavedTo": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Failed to export: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unableToReadFile": "Unable to read selected file.",
+  "invalidFileFormat": "Invalid file format.",
+  "fileDoesNotContainOtp": "Selected file does not contain OTP data.",
+  "fileContainsInvalidOtpEntries": "File contains invalid OTP entries.",
+  "fileContainsNoEntries": "No OTP entries found in file.",
+  "importOptionsTitle": "Import options",
+  "importOptionsMessage": "Would you like to merge the imported OTPs with your existing list, or replace the current list entirely?",
+  "importMergeOption": "Merge",
+  "importReplaceOption": "Replace",
+  "importReplaceSuccess": "OTP list replaced with imported data.",
+  "importMergeSuccess": "Imported OTP entries merged.",
+  "importFailed": "Failed to import: {error}",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commonProceed": "Proceed",
+  "linkAccount": "Link account",
+  "pullData": "Pull Data",
+  "backupData": "Backup Data",
+  "themeModeTitle": "Theme Mode",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "languageSettingTitle": "Language",
+  "languageSettingSubtitle": "Choose a display language.",
+  "languageSystemDefault": "System default",
+  "languageEnglish": "English",
+  "languageSpanish": "Spanish",
+  "languageFrench": "French",
+  "languageGerman": "German",
+  "languageChineseSimplified": "Chinese (Simplified)",
+  "exportData": "Export Data",
+  "importData": "Import Data",
+  "deleteAllCloudData": "Delete All Cloud Data",
+  "unlinkAccount": "Unlink Account",
+  "aboutTitle": "About CloudOTP",
+  "aboutDescription": "CloudOTP is an open-source authenticator that keeps your OTP secrets secure with optional cloud sync.",
+  "viewOnGithub": "View on GitHub",
+  "couldNotOpenRepository": "Could not open the repository.",
+  "offlineMode": "Offline mode",
+  "connectedTo": "Connected to",
+  "workingOffline": "Working offline",
+  "linkedBadge": "Linked",
+  "linkPromptTitle": "Link a cloud account",
+  "linkPromptDescription": "Your OTP secrets are stored locally. Link a cloud account to enable secure backups.",
+  "linkNow": "Link now",
+  "commonUnknown": "unknown",
+  "cloudAccountLinkedAs": "Cloud account linked as {email}",
+  "@cloudAccountLinkedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountLinkedSuccessfully": "Account linked successfully.",
+  "accountCreatedCheckEmail": "Account created. Check your email to confirm.",
+  "authenticationFailed": "Authentication failed: {error}",
+  "@authenticationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "useCloudDataTitle": "Use cloud data?",
+  "useCloudDataMessage": "Cloud backup contains {remoteCount} item(s). Do you want to replace your local entries with the cloud data?",
+  "@useCloudDataMessage": {
+    "placeholders": {
+      "remoteCount": {
+        "type": "int"
+      }
+    }
+  },
+  "keepLocalButton": "Keep local",
+  "useCloudDataButton": "Use cloud data",
+  "linkAccountButton": "Link Account",
+  "createAccountButton": "Create Account",
+  "linkCloudAccountTitle": "Link cloud account",
+  "createCloudAccountTitle": "Create cloud account",
+  "linkCloudAccountSubtitle": "Sign in to sync your OTP secrets securely.",
+  "createCloudAccountSubtitle": "Create an account to enable secure backups.",
+  "emailFieldLabel": "Email",
+  "enterYourEmail": "Enter your email",
+  "passwordFieldLabel": "Password",
+  "enterYourPassword": "Enter your password",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "needAccountSignUp": "Need an account? Sign up",
+  "haveAccountSignIn": "Already have an account? Sign in",
+  "continueOffline": "Continue offline",
+  "otpErrorPlaceholder": "Error"
+}
