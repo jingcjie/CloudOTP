@@ -12,12 +12,7 @@ final bool kIsMAC = Platform.isMacOS;
 
 // Global variables
 final supabase = Supabase.instance.client;
-late List<String> otpUris;
-late String loginUsername;
-late String loginPassword;
-bool needToLogin=true;
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-bool isGuest = false;
 
 
 // bool isValidOtpUri(String uri) {

@@ -6,10 +6,9 @@ import 'dart:async';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
 import 'utils/constants.dart';
-import 'pages/auth_page.dart';
+import 'controllers/account_link_controller.dart';
 import 'pages/main_page.dart';
 import 'models/theme_provider.dart';
-import 'package:animations/animations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,31 +18,11 @@ Future<void> main() async {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjbGFhaGZ2eWZmcXpvcXd3ZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5MTcyMjcsImV4cCI6MjA0MDQ5MzIyN30.wAmbOCF70IcnqVylOUq9FqSzv3_pXcc7uEgVi7_qTQk',
   );
 
-  otpUris = (await prefs.getStringList("otpUris"))??[];
-  try{
-    isGuest = (await prefs.getBool("isGuest"))??false;
-    String savedLoginusername = (await prefs.getString("loginUsername"))??"";
-    String savedLoginPassword = (await prefs.getString("loginPassword"))??"";
-    if (!isGuest){
-      if (savedLoginPassword!="" && savedLoginusername!=""){
-        final response = await supabase.auth.signInWithPassword(
-          email: savedLoginusername,
-          password: savedLoginPassword,
-        );
-        if (response.user != null) {
-          needToLogin = false;
-          loginUsername = savedLoginusername;
-          loginPassword = savedLoginPassword;
-        }
-      }
-    }else{
-      needToLogin = false;
-    }
-  }catch(e) {
-    if (kDebugMode) {
-      print(e);
-    }
-  }
+  final accountController = AccountLinkController(
+    supabaseClient: Supabase.instance.client,
+    preferences: prefs,
+  );
+  await accountController.initialize();
   if (!kIsWeb){
     if(kIsWIN||kIsMAC||kIsLIN){
       WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +48,7 @@ Future<void> main() async {
 
   }
 
-  runApp(const MyApp());
+  runApp(MyApp(accountController: accountController));
 }
 
 class MyWindowListener extends WindowListener {
@@ -96,14 +75,29 @@ class MyWindowListener extends WindowListener {
     }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key, required this.accountController});
 
+  final AccountLinkController accountController;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void dispose() {
+    widget.accountController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: widget.accountController),
+      ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
@@ -119,7 +113,7 @@ class MyApp extends StatelessWidget {
               useMaterial3: true,
             ),
             themeMode: themeProvider.themeMode,
-            home: AppShell(initPageNum:needToLogin?0:1),
+            home: const AppShell(),
           );
         },
       ),
@@ -132,91 +126,8 @@ class MyApp extends StatelessWidget {
 //   const AppShell({super.key});
 //
 //   @override
-//   State<AppShell> createState() => _AppShellState();
-// }
-// class _AppShellState extends State<AppShell> {
-//   int pageNum = 0;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Column(
-//         children: [
-//           if (!kIsWeb && (kIsWIN || kIsMAC || kIsLIN))
-//             Stack(
-//               children: [
-//                 GestureDetector(
-//                   onPanStart: (details) {
-//                     windowManager.startDragging();
-//                   },
-//                   child: Container(
-//                     height: 32,
-//                     color: Colors.transparent,
-//                     child: Center(
-//                       child: Icon(
-//                         Icons.drag_handle,
-//                         size: 24,
-//                         color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 Positioned(
-//                   top: 0,
-//                   right: 0,
-//                   child: IconButton(
-//                     icon: const Icon(Icons.exit_to_app_rounded),
-//                     onPressed: () {
-//                         exit(0);
-//                     },
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           Expanded(
-//             child: Navigator(
-//               key: ValueKey(pageNum), // Force rebuild when pageNum changes
-//               onGenerateRoute: (settings) {
-//                 late Widget page;
-//                 switch(pageNum) {
-//                   case 0:
-//                     page = AuthPage(onLoginCallback: () {
-//                       setState(() => pageNum = 1);
-//                     });
-//                     break;
-//                   case 1:
-//                     page = MainPage(onLogoutCallback: () {
-//                       setState(() => pageNum = 0);
-//                     });
-//                     break;
-//                   default:
-//                     throw StateError('Invalid pageNum: $pageNum');
-//                 }
-//                 return MaterialPageRoute(builder: (_) => page);
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class AppShell extends StatefulWidget {
-  final int initPageNum;
-  const AppShell({super.key, required this.initPageNum});
-
-
-  @override
-  State<AppShell> createState() => _AppShellState();
-}
-
-class _AppShellState extends State<AppShell> {
-  late int pageNum;
-  @override
-  void initState() {
-    super.initState();
-    pageNum = widget.initPageNum;
-  }
+class AppShell extends StatelessWidget {
+  const AppShell({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -254,41 +165,11 @@ class _AppShellState extends State<AppShell> {
                 ),
               ],
             ),
-          Expanded(
-            child: PageTransitionSwitcher(
-              duration: const Duration(milliseconds: 300),
-              reverse: pageNum == 0, // Reverse animation when going back to AuthPage
-              transitionBuilder: (
-                  Widget child,
-                  Animation<double> animation,
-                  Animation<double> secondaryAnimation,
-                  ) {
-                return FadeThroughTransition(
-                  animation: animation,
-                  secondaryAnimation: secondaryAnimation,
-                  child: child,
-                );
-              },
-              child: _buildPage(),
-            ),
+          const Expanded(
+            child: MainPage(),
           ),
         ],
       ),
     );
-  }
-
-  Widget _buildPage() {
-    switch (pageNum) {
-      case 0:
-        return AuthPage(onLoginCallback: () {
-          setState(() => pageNum = 1);
-        });
-      case 1:
-        return MainPage(onLogoutCallback: () {
-          setState(() => pageNum = 0);
-        });
-      default:
-        throw StateError('Invalid pageNum: $pageNum');
-    }
   }
 }

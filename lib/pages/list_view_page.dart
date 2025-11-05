@@ -1,3 +1,4 @@
+import 'package:cloud_otp/controllers/account_link_controller.dart';
 import 'package:cloud_otp/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,81 +14,131 @@ import 'package:zxing2/qrcode.dart';
 import 'package:image/image.dart' as img;
 import 'package:cloud_otp/widgets/qr_code_dialog.dart';
 import 'package:cloud_otp/models/snackbar.dart';
+import 'package:provider/provider.dart';
 
 class ListViewPage extends StatefulWidget {
-  ListViewPage({super.key});
-
-  // late List<String> originalUris;
-  final List<String> initialOtpUris = List.from(otpUris);
+  const ListViewPage({super.key});
 
   @override
-  _ListViewPageState createState() => _ListViewPageState();
+  State<ListViewPage> createState() => _ListViewPageState();
 }
 
 class _ListViewPageState extends State<ListViewPage> {
-  late List<OtpItem> otpItems;
-  late List<String> currentOtps;
-  late List<bool> _isExpanded;
-  late List<double> _progress;
-  late List<Timer> _timers;
+  AccountLinkController? _controller;
+  List<String> _cachedUris = [];
+  List<OtpItem> otpItems = <OtpItem>[];
+  List<String> currentOtps = <String>[];
+  List<bool> _isExpanded = <bool>[];
+  List<double> _progress = <double>[];
+  List<Timer?> _timers = <Timer?>[];
 
   @override
   void initState() {
     super.initState();
-    _initializeState();
+    _initializeState(const [], notify: false);
   }
 
   @override
-  void didUpdateWidget(ListViewPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.initialOtpUris != oldWidget.initialOtpUris) {
-      initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final controller = context.read<AccountLinkController>();
+    if (!identical(_controller, controller)) {
+      _controller?.removeListener(_onControllerChanged);
+      _controller = controller;
+      _controller?.addListener(_onControllerChanged);
+      _syncFromController();
     }
   }
 
-  void _initializeState() {
+  void _onControllerChanged() {
+    if (!mounted || _controller == null) return;
+    final newUris = _controller!.otpUris;
+    if (!listEquals(_cachedUris, newUris)) {
+      _syncFromController();
+    }
+  }
+
+  void _syncFromController() {
+    final current = _controller?.otpUris ?? const <String>[];
+    _cachedUris = List<String>.from(current);
+    _initializeState(_cachedUris);
+  }
+
+  void _initializeState(List<String> source, {bool notify = true}) {
+    _disposeTimers();
     try {
-      // Create a new modifiable list from widget.otpUris
-      // originalUris = List<String>.from(otpUris);
-      otpItems = List<OtpItem>.from(otpUris.map((uri) => OtpItem.fromUri(uri)));
+      final items = List<OtpItem>.from(source.map((uri) => OtpItem.fromUri(uri)));
+      final expanded = List<bool>.filled(items.length, false, growable: true);
+      final progress = List<double>.filled(items.length, 0.0, growable: true);
+      final timers = List<Timer?>.filled(items.length, null, growable: true);
+      final otps = List<String>.generate(items.length, (index) => '');
 
-      // Use List.filled to create modifiable lists
-      _isExpanded = List<bool>.filled(otpItems.length, false, growable: true);
-      _progress = List<double>.filled(otpItems.length, 0.0, growable: true);
-      _timers = List<Timer>.generate(otpItems.length, (_) => Timer(Duration.zero, () {}), growable: true);
-      currentOtps = List<String>.filled(otpItems.length, '', growable: true);
-
-      if (otpItems.isNotEmpty) {
-        _generateAllOtps();
+      for (var i = 0; i < items.length; i++) {
+        otps[i] = _generateOtp(items[i]);
       }
-    } catch (e) {
-      print('Error in initState: $e');
-      _setDefaultValues();
-    }
-  }
 
-  void _setDefaultValues() {
-    // Initialize modifiable lists
-    // originalUris = [];
-    otpItems = [];
-    _isExpanded = [];
-    _progress = [];
-    _timers = [];
-    currentOtps = [];
+      void apply() {
+        otpItems = items;
+        _isExpanded = expanded;
+        _progress = progress;
+        _timers = timers;
+        currentOtps = otps;
+      }
+
+      if (notify && mounted) {
+        setState(apply);
+      } else {
+        apply();
+      }
+
+      for (var i = 0; i < items.length; i++) {
+        _resetAndStartTimer(i);
+      }
+    } catch (e, stack) {
+      if (kDebugMode) {
+        print('Error initializing OTP state: $e');
+        print(stack);
+      }
+
+      void clear() {
+        otpItems = <OtpItem>[];
+        _isExpanded = <bool>[];
+        _progress = <double>[];
+        _timers = <Timer?>[];
+        currentOtps = <String>[];
+      }
+
+      if (notify && mounted) {
+        setState(clear);
+      } else {
+        clear();
+      }
+    }
   }
 
   @override
   void dispose() {
-    for (var timer in _timers) {
-      timer.cancel();
-    }
+    _controller?.removeListener(_onControllerChanged);
+    _disposeTimers();
     super.dispose();
   }
 
-  void _resetAndStartTimer(int index) {
-    if (index < 0 || index >= _timers.length) return;
+  void _disposeTimers() {
+    for (final timer in _timers) {
+      timer?.cancel();
+    }
+    _timers = <Timer?>[];
+  }
 
-    _timers[index].cancel();
+  void _resetAndStartTimer(int index) {
+    if (index < 0 ||
+        index >= _timers.length ||
+        index >= otpItems.length ||
+        index >= _progress.length) {
+      return;
+    }
+
+    _timers[index]?.cancel();
     _progress[index] = 0.0;
 
     const updateInterval = Duration(milliseconds: 100);
@@ -96,11 +147,17 @@ class _ListViewPageState extends State<ListViewPage> {
 
     _timers[index] = Timer.periodic(updateInterval, (timer) {
       elapsed += updateInterval;
-      if (mounted) {
-        setState(() {
-          _progress[index] = elapsed.inMilliseconds / totalDuration.inMilliseconds;
-        });
+      if (!mounted || index >= _progress.length) {
+        timer.cancel();
+        return;
       }
+
+      setState(() {
+        final fraction = totalDuration.inMilliseconds == 0
+            ? 1.0
+            : elapsed.inMilliseconds / totalDuration.inMilliseconds;
+        _progress[index] = fraction.clamp(0.0, 1.0).toDouble();
+      });
 
       if (elapsed >= totalDuration) {
         timer.cancel();
@@ -110,46 +167,30 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   void _refreshOtp(int index) {
-    if (index < 0 || index >= otpItems.length) return;
+    if (index < 0 || index >= otpItems.length || index >= currentOtps.length) return;
 
+    final newCode = _generateOtp(otpItems[index]);
+    if (!mounted) return;
     setState(() {
-      currentOtps[index] = _generateOtp(otpItems[index]);
-      _resetAndStartTimer(index);
+      currentOtps[index] = newCode;
     });
+    _resetAndStartTimer(index);
   }
 
-  void _generateAllOtps() {
-    setState(() {
-      for (int i = 0; i < otpItems.length; i++) {
-        currentOtps[i] = _generateOtp(otpItems[i]);
-        _resetAndStartTimer(i);
-      }
-    });
-  }
-
-  void _addOtp(String uri) {
-    setState(() {
-      try {
-        otpUris.add(uri);
-        prefs.setStringList('otpUris', otpUris);
-        // originalUris.add(uri);
-        final newOtpItem = OtpItem.fromUri(uri);
-        otpItems.add(newOtpItem);
-        _isExpanded.add(false);
-        _progress.add(0.0);
-        _timers.add(Timer(Duration.zero, () {}));
-        currentOtps.add('');
-        final newIndex = otpItems.length - 1;
-        currentOtps[newIndex] = _generateOtp(newOtpItem);
-        _resetAndStartTimer(newIndex);
-      } catch (e) {
-        // print('Error adding OTP: $e');
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Failed to add OTP: $e')),
-        // );
-        context.showBeautifulSnackBar(message: 'Failed to add OTP: $e', isError: true);
-      }
-    });
+  Future<void> _addOtp(String uri) async {
+    final controller = _controller;
+    if (controller == null) return;
+    try {
+      await controller.addOtp(uri);
+      if (!mounted) return;
+      final message = controller.isLinked
+          ? 'OTP saved locally. Use Backup Data to sync cloud.'
+          : 'OTP saved locally.';
+      context.showBeautifulSnackBar(message: message, isError: false);
+    } catch (e) {
+      if (!mounted) return;
+      context.showBeautifulSnackBar(message: 'Failed to add OTP: $e', isError: true);
+    }
   }
 
   String _generateOtp(OtpItem item) {
@@ -184,7 +225,8 @@ class _ListViewPageState extends State<ListViewPage> {
 
 
   void _exportOtp(BuildContext context, int index) {
-    var singleOtpUri = otpUris[index];
+    if (index < 0 || index >= _cachedUris.length) return;
+    var singleOtpUri = _cachedUris[index];
 
     showDialog(
       context: context,
@@ -194,37 +236,16 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
-  void _deleteOtp(int index) {
+  Future<void> _deleteOtp(int index) async {
+    final controller = _controller;
+    if (controller == null) return;
     try {
-      // Remove the OTP URI from the list
-      otpUris.removeAt(index);
-      // Remove the OTP item from the list
-      otpItems.removeAt(index);
-      // Remove the corresponding expansion state
-      _isExpanded.removeAt(index);
-      // Cancel and remove the timer
-      _timers[index].cancel();
-      _timers.removeAt(index);
-      // Remove the progress indicator value
-      _progress.removeAt(index);
-      // Remove the current OTP value
-      currentOtps.removeAt(index);
-      // Update the stored URIs in SharedPreferences
-      prefs.setStringList('otpUris', otpUris);
-      // Show a success message
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Deleted successfully')),
-      // );
-
+      await controller.removeOtpAt(index);
+      if (!mounted) return;
       context.showBeautifulSnackBar(message: 'Deleted successfully.', isError: false);
-
     } catch (e) {
-      // print('Error deleting OTP: $e');
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Failed to delete OTP: $e')),
-      // );
+      if (!mounted) return;
       context.showBeautifulSnackBar(message: 'Failed to delete OTP: $e', isError: true);
-
     }
   }
 
@@ -242,16 +263,24 @@ class _ListViewPageState extends State<ListViewPage> {
           : ListView.builder(
         itemCount: otpItems.length,
         itemBuilder: (context, index) {
+          if (index < 0 || index >= otpItems.length) {
+            return const SizedBox.shrink();
+          }
+          final otpItem = otpItems[index];
+          final code = index < currentOtps.length ? currentOtps[index] : '';
+          final progress = index < _progress.length ? _progress[index] : 0.0;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             elevation: 2,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: ExpansionTile(
+              key: ValueKey(index < _cachedUris.length ? _cachedUris[index] : '$index'),
+              initiallyExpanded: index < _isExpanded.length && _isExpanded[index],
               title: Text(
-                otpItems[index].label,
+                otpItem.label,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: Text(otpItems[index].issuer),
+              subtitle: Text(otpItem.issuer),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -266,6 +295,9 @@ class _ListViewPageState extends State<ListViewPage> {
                 ],
               ),
               onExpansionChanged: (expanded) {
+                if (index < 0 || index >= _isExpanded.length) {
+                  return;
+                }
                 setState(() {
                   _isExpanded[index] = expanded;
                 });
@@ -276,14 +308,14 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('OTP: ${currentOtps[index]}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('OTP: $code', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Text('Digits: ${otpItems[index].length}'),
-                      Text('Interval: ${otpItems[index].interval}s'),
-                      Text('Algorithm: ${otpItems[index].algorithm.toString().split('.').last}'),
+                      Text('Digits: ${otpItem.length}'),
+                      Text('Interval: ${otpItem.interval}s'),
+                      Text('Algorithm: ${otpItem.algorithm.toString().split('.').last}'),
                       const SizedBox(height: 16),
                       LinearProgressIndicator(
-                        value: _progress[index],
+                        value: progress.clamp(0.0, 1.0).toDouble(),
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                       ),
@@ -389,7 +421,7 @@ class _ListViewPageState extends State<ListViewPage> {
       },
     );
     if (result != null) {
-      _addOtp(result);
+      await _addOtp(result);
     }
   }
 
@@ -408,7 +440,7 @@ class _ListViewPageState extends State<ListViewPage> {
     }
     if (scannedData != null) {
       if (isValidOtpUri(scannedData)) {
-        _addOtp(scannedData);
+        await _addOtp(scannedData);
       } else {
         // ScaffoldMessenger.of(context).showSnackBar(
         //   const SnackBar(content: Text('Invalid OTP QR code')),

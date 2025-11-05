@@ -1,15 +1,9 @@
-import 'package:cloud_otp/utils/constants.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'settings_page.dart';
 import 'list_view_page.dart';
-import 'package:cloud_otp/models/snackbar.dart';
 
 class MainPage extends StatefulWidget {
-  final VoidCallback onLogoutCallback;
-
-  const MainPage({super.key, required this.onLogoutCallback});
+  const MainPage({super.key});
 
 
   @override
@@ -19,19 +13,14 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
 
   int _selectedIndex = 0;
-  late List<Widget> _widgetOptions;
+  late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
-    StatelessWidget settingsPage = EmptySettingsPage(onLogoutCallback: widget.onLogoutCallback);
-    if(!isGuest){
-      settingsPage = SettingsPage(onLogoutCallback: widget.onLogoutCallback);
-    }
-
-    _widgetOptions = <Widget>[
-      ListViewPage(),
-      settingsPage,
+    _pages = <Widget>[
+      const ListViewPage(),
+      const SettingsPage(),
     ];
   }
   void _onItemTapped(int index) {
@@ -43,8 +32,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

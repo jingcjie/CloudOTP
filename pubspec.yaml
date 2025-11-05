@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.3.3+2
+version: 2.0.3+0
 
 environment:
   sdk: ^3.5.1
@@ -31,18 +31,20 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.1.2
-  supabase_flutter: ^1.10.25
+  supabase_flutter: ^2.0.6
   crypto: ^3.0.3
   otp: 3.1.2
   flutter_speed_dial: ^7.0.0
   shared_preferences: ^2.3.2
-  file_picker: ^5.3.1
+  file_picker: ^8.1.4
   image: ^4.0.17
   zxing2: ^0.2.0
   qr_flutter: ^4.1.0
   mobile_scanner: ^5.2.1
   window_manager: ^0.4.2
   animations: ^2.0.11
+  sign_in_with_apple: ^6.0.1
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -84,7 +86,7 @@ msix_config:
   display_name: CloudOTP
   publisher_display_name: JINGCJIE
   identity_name: JINGCJIE.31594FB165A1C
-  msix_version: 1.3.3.0
+  msix_version: 2.0.3.0
   logo_path: "./icon.png"
   capabilities: internetClient
   enable_at_startup: false
