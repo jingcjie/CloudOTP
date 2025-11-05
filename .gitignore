@@ -31,11 +31,13 @@ migrate_working_dir/
 .packages
 .pub-cache/
 .pub/
-lib/generated_plugin_registrant.dart
 
 # Build outputs
-build/
 **/build/
+!build/
+build/**
+!build/web/
+!build/web/**
 coverage/
 /windows/iss/Output/
 
@@ -87,5 +89,3 @@ linux/flutter/ephemeral/
 # Windows
 windows/flutter/ephemeral/
 
-# Web
-build/web/

@@ -95,6 +95,7 @@ msix_config:
   capabilities: internetClient
   enable_at_startup: false
   store: true
+  languages: en, es, fr, de, zh
   publisher: CN=79F5182C-F623-427B-BB35-112212334FEE
 
 # For information on the generic Dart part of this file, see the
