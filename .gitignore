@@ -94,3 +94,5 @@ linux/flutter/ephemeral/
 # Windows
 windows/flutter/ephemeral/
 
+new_icon.png
+release/
