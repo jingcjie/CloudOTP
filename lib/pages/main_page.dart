@@ -8,7 +8,7 @@ class MainPage extends StatefulWidget {
 
 
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {

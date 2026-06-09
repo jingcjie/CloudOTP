@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:cloud_otp/models/otp_item.dart';
+
 enum AccountAuthMode { login, signup }
 
 class AccountLinkResult {
@@ -31,6 +33,11 @@ class AccountLinkController extends ChangeNotifier {
   static const _otpStorageKey = 'otpUris';
   static const _emailStorageKey = 'linkedEmail';
   static const _passwordStorageKey = 'linkedPassword';
+  static const _schemaVersionKey = 'dataSchemaVersion';
+
+  /// Current on-disk data-format version. Bump this and add a step to
+  /// [_migrateStoredData] whenever the stored representation changes.
+  static const _currentSchemaVersion = 1;
 
   bool _isLinked = false;
   bool _isLoading = false;
@@ -48,14 +55,18 @@ class AccountLinkController extends ChangeNotifier {
   Future<void> initialize() async {
     _setLoading(true);
     try {
-      final storedUris = await _prefs.getStringList(_otpStorageKey) ?? <String>[];
+      final storedUris =
+          await _prefs.getStringList(_otpStorageKey) ?? <String>[];
       _otpUris = List<String>.from(storedUris);
+
+      await _migrateStoredData();
 
       final savedEmail = await _prefs.getString(_emailStorageKey);
       final savedPassword = await _prefs.getString(_passwordStorageKey);
       if (savedEmail != null && savedPassword != null) {
         try {
-          await signIn(email: savedEmail, password: savedPassword, silent: true);
+          await signIn(
+              email: savedEmail, password: savedPassword, silent: true);
         } catch (error) {
           if (kDebugMode) {
             debugPrint('Auto link failed: $error');
@@ -107,18 +118,16 @@ class AccountLinkController extends ChangeNotifier {
       _isLinked = true;
       await _storeCredentials(email: email, password: password);
 
-      if (_otpUris.isEmpty && remoteData.isNotEmpty) {
-        await _replaceLocalData(remoteData);
-      } else {
-        await _persistLocal();
-      }
+      await _persistLocal();
 
       if (!silent) {
         notifyListeners();
       }
 
-      final requiresMerge = remoteData.isNotEmpty && _otpUris.isNotEmpty;
-      return AccountLinkResult(remoteData: remoteData, mergeRequired: requiresMerge);
+      final requiresMerge =
+          remoteData.isNotEmpty && !listEquals(remoteData, _otpUris);
+      return AccountLinkResult(
+          remoteData: remoteData, mergeRequired: requiresMerge);
     } catch (error) {
       if (!silent) {
         rethrow;
@@ -146,7 +155,6 @@ class AccountLinkController extends ChangeNotifier {
       _linkedEmail = email;
       _isLinked = true;
       await _storeCredentials(email: email, password: password);
-      await _syncLocalToCloud();
       notifyListeners();
     } finally {
       _setLoading(false);
@@ -174,19 +182,75 @@ class AccountLinkController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Replaces the URI at [index] in place and persists locally only. Cloud
+  /// backup/download stays user-driven through the Settings actions, even when
+  /// an account is linked.
+  Future<void> updateOtpAt(int index, String uri) async {
+    if (index < 0 || index >= _otpUris.length) return;
+    if (_otpUris[index] == uri) return;
+    _otpUris = List<String>.from(_otpUris)..[index] = uri;
+    await _persistLocal();
+    notifyListeners();
+  }
+
+  /// Merges [data] into the local list. Dedupes by account [OtpItem.identityKey]
+  /// (not exact string), so an HOTP entry that differs only by counter is not
+  /// duplicated — the higher counter wins. Stored strings are preserved verbatim
+  /// (never re-serialized), and any URI that fails to parse falls back to
+  /// exact-string dedupe so nothing is dropped or rewritten.
   Future<void> mergeWith(List<String> data) async {
+    final result = List<String>.from(_otpUris);
+    final identityToIndex = <String, int>{};
+    for (var i = 0; i < result.length; i++) {
+      final id = _identityOf(result[i]);
+      if (id != null) {
+        identityToIndex[id] = i;
+      }
+    }
+
     bool changed = false;
-    final updated = List<String>.from(_otpUris);
     for (final uri in data) {
-      if (!updated.contains(uri)) {
-        updated.add(uri);
+      final id = _identityOf(uri);
+      if (id == null) {
+        // Unparseable: keep the exact-string behavior so we never lose it.
+        if (!result.contains(uri)) {
+          result.add(uri);
+          changed = true;
+        }
+        continue;
+      }
+      final existingIndex = identityToIndex[id];
+      if (existingIndex == null) {
+        result.add(uri);
+        identityToIndex[id] = result.length - 1;
+        changed = true;
+      } else if (_counterOf(uri) > _counterOf(result[existingIndex])) {
+        // Same account, higher HOTP counter — adopt the incoming string as-is.
+        result[existingIndex] = uri;
         changed = true;
       }
     }
+
     if (!changed) return;
-    _otpUris = updated;
+    _otpUris = result;
     await _persistLocal();
     notifyListeners();
+  }
+
+  String? _identityOf(String uri) {
+    try {
+      return OtpItem.fromUri(uri).identityKey;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  int _counterOf(String uri) {
+    try {
+      return OtpItem.fromUri(uri).counter;
+    } catch (_) {
+      return 0;
+    }
   }
 
   Future<void> replaceLocalWith(List<String> remoteData) async {
@@ -209,9 +273,8 @@ class AccountLinkController extends ChangeNotifier {
 
   Future<void> clearCloudData() async {
     _ensureLinked();
-    await _supabase
-        .from('user_data')
-        .update({'user_data': []}).eq('user_id', _supabase.auth.currentUser!.id);
+    await _supabase.from('user_data').update({'user_data': []}).eq(
+        'user_id', _supabase.auth.currentUser!.id);
   }
 
   void _setLoading(bool value) {
@@ -224,6 +287,33 @@ class AccountLinkController extends ChangeNotifier {
 
   Future<void> _persistLocal() {
     return _prefs.setStringList(_otpStorageKey, _otpUris);
+  }
+
+  /// Runs any pending on-disk data migrations and stamps the current version.
+  ///
+  /// Installs that predate versioning have no stored version; they are already
+  /// in the v1 format (a plain list of otpauth URIs), so they are treated as v1
+  /// and migrated forward from there. This step does NOT touch [_otpUris] today
+  /// — it only establishes the upgrade path. To evolve the format later: bump
+  /// [_currentSchemaVersion] and add a `case n:` that transforms v(n) -> v(n+1),
+  /// writing the result back via [_persistLocal].
+  ///
+  /// NOTE for future format changes: this runs once at startup on the *locally
+  /// stored* list. Data ingested later from the cloud ([pullFromCloud], [signIn],
+  /// [replaceLocalWith]) bypasses this path, so a real migration must also be
+  /// applied to remote-sourced data (e.g. factor the transform into a pure
+  /// function and call it from [_replaceLocalData]).
+  Future<void> _migrateStoredData() async {
+    var version = await _prefs.getInt(_schemaVersionKey) ?? 1;
+    while (version < _currentSchemaVersion) {
+      switch (version) {
+        // case 1: await _migrateV1toV2(); break;
+        default:
+          break;
+      }
+      version++;
+    }
+    await _prefs.setInt(_schemaVersionKey, _currentSchemaVersion);
   }
 
   Future<void> _replaceLocalData(List<String> data) async {
@@ -271,9 +361,8 @@ class AccountLinkController extends ChangeNotifier {
   }
 
   Future<void> _syncLocalToCloud() async {
-    await _supabase
-        .from('user_data')
-        .update({'user_data': _otpUris}).eq('user_id', _supabase.auth.currentUser!.id);
+    await _supabase.from('user_data').update({'user_data': _otpUris}).eq(
+        'user_id', _supabase.auth.currentUser!.id);
   }
 
   void _ensureLinked() {

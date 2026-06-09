@@ -61,6 +61,16 @@
       }
     }
   },
+  "hotpCounterLabel": "计数器：{counter}",
+  "@hotpCounterLabel": {
+    "placeholders": {
+      "counter": {
+        "type": "int"
+      }
+    }
+  },
+  "hotpCopyAdvanceTooltip": "复制并前进",
+  "hotpAdvanceTooltip": "前进计数器",
   "manualInput": "手动输入",
   "qrScanner": "二维码扫描",
   "manualInputTitle": "手动输入",

@@ -21,6 +21,11 @@ Future<void> main() async {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjbGFhaGZ2eWZmcXpvcXd3ZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5MTcyMjcsImV4cCI6MjA0MDQ5MzIyN30.wAmbOCF70IcnqVylOUq9FqSzv3_pXcc7uEgVi7_qTQk',
   );
 
+  // Keep the Supabase free-tier project from pausing after 7 days of inactivity:
+  // fire a lightweight, unconditional keep-alive ping on every launch (linked or
+  // not). Fire-and-forget — never blocks startup, never throws if offline/paused.
+  _pingKeepAlive();
+
   final accountController = AccountLinkController(
     supabaseClient: Supabase.instance.client,
     preferences: prefs,
@@ -28,7 +33,6 @@ Future<void> main() async {
   await accountController.initialize();
   if (!kIsWeb){
     if(kIsWIN||kIsMAC||kIsLIN){
-      WidgetsFlutterBinding.ensureInitialized();
       await windowManager.ensureInitialized();
       windowManager.waitUntilReadyToShow().then((_) async {
         await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
@@ -52,6 +56,22 @@ Future<void> main() async {
   }
 
   runApp(MyApp(accountController: accountController));
+}
+
+/// Resets the Supabase free-tier 7-day inactivity timer so the project is never
+/// auto-paused. Calls the `keep_alive()` RPC (granted to `anon`), which just
+/// returns `now()`. Silent and non-blocking: a short timeout keeps a slow/paused
+/// backend from leaving a dangling future, and all errors are swallowed.
+void _pingKeepAlive() {
+  unawaited(
+    supabase
+        .rpc('keep_alive')
+        .timeout(const Duration(seconds: 10))
+        .then(
+          (_) {},
+          onError: (Object e) => debugPrint('keep_alive ping failed (ignored): $e'),
+        ),
+  );
 }
 
 class MyWindowListener extends WindowListener {
@@ -105,7 +125,7 @@ class _MyAppState extends State<MyApp> {
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, child) {
           return MaterialApp(
-            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             locale: localeProvider.locale,
             supportedLocales: LocaleProvider.supportedLocales,
             localizationsDelegates: const [
@@ -151,11 +171,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-//
-// class AppShell extends StatefulWidget {
-//   const AppShell({super.key});
-//
-//   @override
 class AppShell extends StatelessWidget {
   const AppShell({super.key});
 
@@ -178,7 +193,7 @@ class AppShell extends StatelessWidget {
                       child: Icon(
                         Icons.drag_handle,
                         size: 24,
-                        color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                        color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
                       ),
                     ),
                   ),

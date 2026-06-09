@@ -614,7 +614,7 @@ class _SettingsPageState extends State<SettingsPage> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).primaryColorLight,
-            Theme.of(context).primaryColorDark.withOpacity(0.6),
+            Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
           ],
         ),
       ),
@@ -626,7 +626,7 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Icon(
               Icons.account_circle,
               size: 80,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
           Positioned(
@@ -638,7 +638,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Text(
                   isLinked ? l10n.connectedTo : l10n.workingOffline,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 16,
                   ),
                 ),
@@ -659,7 +659,7 @@ class _SettingsPageState extends State<SettingsPage> {
               right: 20,
               child: Chip(
                 avatar: const Icon(Icons.cloud_done, color: Colors.white, size: 16),
-                backgroundColor: Colors.green.withOpacity(0.8),
+                backgroundColor: Colors.green.withValues(alpha: 0.8),
                 label: Text(
                   l10n.linkedBadge,
                   style: const TextStyle(color: Colors.white),

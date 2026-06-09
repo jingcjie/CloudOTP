@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 class BeautifulSnackBar extends SnackBar {
   BeautifulSnackBar({
-    Key? key,
+    super.key,
     required String message,
     bool isError = false,
     VoidCallback? onActionPressed,
   }) : super(
-    key: key,
     content: BeautifulSnackBarContent(
       message: message,
       isError: isError,
@@ -16,7 +15,7 @@ class BeautifulSnackBar extends SnackBar {
     backgroundColor: Colors.transparent,
     elevation: 0,
     behavior: SnackBarBehavior.floating,
-    duration: Duration(seconds: 2),
+    duration: const Duration(seconds: 2),
   );
 }
 
@@ -26,11 +25,11 @@ class BeautifulSnackBarContent extends StatelessWidget {
   final VoidCallback? onActionPressed;
 
   const BeautifulSnackBarContent({
-    Key? key,
+    super.key,
     required this.message,
     this.isError = false,
     this.onActionPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,17 +39,17 @@ class BeautifulSnackBarContent extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isError
-              ? [Colors.red.withOpacity(1), Colors.red.withOpacity(0)]
-              : [Colors.green.withOpacity(1), Colors.green.withOpacity(0)],
+              ? [Colors.red.withValues(alpha: 1), Colors.red.withValues(alpha: 0)]
+              : [Colors.green.withValues(alpha: 1), Colors.green.withValues(alpha: 0)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
-            offset: Offset(0, 10),
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -61,18 +60,18 @@ class BeautifulSnackBarContent extends StatelessWidget {
             color: Colors.white,
             size: 28,
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           // TextButton(
           //   onPressed: onActionPressed ?? () {},
           //   child: Text(

@@ -1,141 +1,127 @@
-# 🔐 Cross-Platform OTP Authenticator
+# CloudOTP Authenticator
 
-A versatile Open-Source One-Time Password (OTP) authenticator application built with Dart, supporting multiple platforms including Windows, Linux, Web, Android, iOS, and macOS.
+Open-source TOTP/HOTP authenticator for Windows desktop, Android, and Web with QR import/export, local-only storage, and optional cloud sync.
 
-[中文版 README](./readme-zh.md)
-## 🤔 Why This Project?
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-CloudOTP-0078D4?logo=microsoftstore&logoColor=white)](https://apps.microsoft.com/detail/9pld5r9rpwpx)
+[![GitHub release](https://img.shields.io/github/v/release/jingcjie/CloudOTP)](https://github.com/jingcjie/CloudOTP/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Android%20%7C%20Web-brightgreen)](#install)
 
-While Google Authenticator is a popular choice for OTP, it has some limitations:
+[中文 README](./readme-zh.md)
 
-1. 📵 It only supports Android and iOS, making it inconvenient for desktop users.
-2. 🔒 It's device-based, which means you can't easily access your codes across multiple devices. (God knows every time I need an OTP but I don't know where my phone is!)
-3. 🔒 Limited backup and transfer options for your OTP setups. (Of course I don't want to bind to one software!)
+CloudOTP is built for people who want OTP codes available on their PC without being locked into one device or one vendor. Use it as a Windows desktop authenticator, open the web version when needed, or install the Android APK from GitHub Releases.
 
-This project aims to solve these issues by providing a cross-platform solution that allows you to use OTP codes on your preferred device, whether it's your phone, tablet, or computer. Additionally, our QR code export feature ensures you're never locked into our app - you can easily transfer your OTPs to other authenticator apps or create backups.
+> Screenshots and demo GIFs are being prepared under `docs/assets/`.
 
-## 🥳 Tested Platforms
-### Supported
-<div style="display: flex; align-items: center; gap: 20px;">
-  <img src="https://github.com/fluidicon.png" alt="GitHub" width="48" height="48">
-  <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/01-nvidia-logo-vert-500x200-2c50-d.png" alt="NVIDIA" width="120" height="48">
-  <img src="https://www.cloudflare.com/img/logo-web-badges/cf-logo-on-white-bg.svg" alt="Cloudflare" width="96" height="48">
-  <img src="https://avatars.githubusercontent.com/u/17085531?s=200&v=4" alt="Nexus mod" width="48" height="48">
-  <img src="https://avatars.githubusercontent.com/u/22990620?s=200&v=4" alt="Parsec" width="48" height="48">
-  <img src="https://www.notion.so/front-static/logo-ios.png" alt="Notion" width="48" height="48">
-  <img src="https://avatars.githubusercontent.com/u/23211?s=200&v=4" alt="Heroku" width="48" height="48">
-  <img src="https://www.v2ex.com/static/img/v2ex@2x.png" alt="V2EX" width="96" height="48">
-  <img src="https://cdn.worldvectorlogo.com/logos/binance.svg" alt="Binance" width="96" height="48">
-</div>
+## Install
 
+### Windows
 
-### Not supported
-Feel free to post issue for platforms with standard OTP but not supported for this app. ❤️
+Install CloudOTP from the Microsoft Store:
 
-## ✨ Data Security
+<a href="https://apps.microsoft.com/detail/9pld5r9rpwpx"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Store" width="142" height="52"></a>
 
-### Local mode
+### Web
 
-When user chose to use local mode, data will be stored locally. Clean the app data will lose the data stored.
+Use the browser version at [https://cloudotp.top/](https://cloudotp.top/).
 
-### Cloud mode
-The data visibility is restricted to each unique id.
-This is ensured by [Row-Level-Security](https://supabase.com/docs/guides/database/postgres/row-level-security) rules.
-```sql
-alter policy "Only enable read access for this users"
-on "authenticated"."user_data"
-to authenticated
-using (
-  (( SELECT auth.uid() AS uid) = user_id)
-);
+### Android
+
+Download the APK from the [latest GitHub Release](https://github.com/jingcjie/CloudOTP/releases/latest).
+
+Choose the APK for your device:
+
+- `arm64-v8a`: most modern Android phones
+- `armeabi-v7a`: older 32-bit Android phones
+- `x86_64`: emulators and some Chromebook devices
+
+CloudOTP is no longer published on Google Play.
+
+### Build from source
+
+Install [Flutter](https://flutter.dev/docs/get-started/install), then run:
+
+```bash
+git clone https://github.com/jingcjie/CloudOTP.git
+cd CloudOTP
+flutter pub get
 ```
 
-## 🚀 Getting Started
+Run locally:
 
-### Quick Access Options
+```bash
+flutter run -d windows
+flutter run -d chrome
+flutter run
+```
 
-- 🌐 **Web Version**: Visit [https://cloudotp.top/](https://cloudotp.top/) to use the OTP Authenticator directly in your browser.
-- 🏪 **Microsoft Store**: Get the app from the Microsoft Store for easy installation on Windows devices.
+Manual release builds:
 
-<a href='https://www.microsoft.com/store/apps/9pld5r9rpwpx?cid=storebadge&ocid=badge'><img src='https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png' alt='English badge' width='142px' height='52px'/></a>
-- 📥 **Pre-compiled Releases**: If you don't want to compile the application yourself, you can download pre-compiled releases from [GitHub Releases page](https://github.com/jingcjie/cloud_otp/releases/latest).
+```bash
+flutter build apk --split-per-abi
+dart run msix:create
+flutter build web
+```
 
-### Prerequisites (for compiling from source)
+## Features
 
-- [Dart SDK](https://dart.dev/get-dart) 🎯
-- [Flutter](https://flutter.dev/docs/get-started/install) 💙 (for mobile and desktop builds)
+- Windows desktop authenticator available from Microsoft Store
+- TOTP and HOTP code generation
+- QR scan, image import, and manual account setup
+- QR export for backup, transfer, and migration to other authenticators
+- Local-only mode for device storage
+- Optional cloud sync for backup and restore
+- Light and dark themes
+- English, Chinese, Spanish, French, and German UI
+- MIT licensed source code
 
-### Installation (from source)
+## Security Model
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/jingcjie/cloud_otp.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd cloud_otp
-   ```
-3. Install dependencies:
-   ```
-   dart pub get
-   ```
+CloudOTP supports local mode and optional cloud sync.
 
-### Running the Application
+In local mode, OTP data is stored on the current device. Removing app data can remove locally stored OTP entries, so keep your own backup if you rely on local-only mode.
 
-- For web:
-  ```
-  flutter run -d chrome
-  ```
-- For desktop (Windows/Linux/macOS):
-  ```
-  flutter run -d windows
-  flutter run -d linux
-  flutter run -d macos
-  ```
-- For mobile (ensure you have a connected device or emulator):
-  ```
-  flutter run
-  ```
-- Android split abi:
-  ```
-  flutter build apk --split-per-abi
-  ```
-- Windows msix:
-  ```
-  dart run msix:create
-  ```
+Cloud sync is optional. Cloud data is isolated per account with Supabase authentication and Row-Level Security policies. Client-side encryption for cloud sync is planned, so the project does not currently describe cloud sync as end-to-end encrypted.
 
-## 💡 Key Features Highlight
+QR export is designed to prevent lock-in: you can export accounts and move them to another authenticator at any time.
 
-### QR Code Export and Backup
+## Screenshots
 
-Our OTP Authenticator allows you to export any of your OTP setups as a QR code. This feature provides several benefits:
+Demo screenshots and GIFs should use fake accounts only. See:
 
-1. 🔄 **Easy Transfer**: Quickly move your OTP setups to another device or authenticator app.
-2. 💾 **Secure Backup**: Generate and save QR codes for all your OTPs as a foolproof backup method.
-3. 🔓 **No Lock-in**: You're never trapped in this app - your OTP setups are always portable.
-4. 📸 **Quick Setup**: Easily set up new devices by scanning your saved QR codes.
+- [`docs/assets/screenshots/`](docs/assets/screenshots/)
+- [`docs/assets/gifs/`](docs/assets/gifs/)
 
-To use this feature, simply select the OTP you want to export and choose the "Export as QR" option. You can then save the QR code image securely or use it immediately to set up the OTP in another app.
+Suggested demo accounts:
 
-## 👥 Contributing
+- Example Mail
+- Work Dashboard
+- CloudOTP Demo
+- Local Account
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## Compatibility
 
-## 📄 License
+Current release targets:
 
-This project is licensed under the [MIT License](LICENSE).
+- Windows 10/11
+- Android APK from GitHub Releases
+- Web browser at `cloudotp.top`
 
-## 🙏 Acknowledgements
+Linux, macOS, and iOS are not current published targets.
 
-- [Dart](https://dart.dev) 🎯
-- [Flutter](https://flutter.dev) 💙
-- [OTP RFC 6238](https://tools.ietf.org/html/rfc6238) 🔢
+## Contributing
 
-## 🙏 A star please
+Contributions are welcome. Please open an issue or submit a pull request.
 
-## 📊 Project Status
+## License
 
-![GitHub stars](https://img.shields.io/github/stars/jingcjie/cloud_otp?style=social)
-![GitHub issues](https://img.shields.io/github/issues/jingcjie/cloud_otp)
+CloudOTP is licensed under the [MIT License](LICENSE).
 
+## Acknowledgements
+
+- [Dart](https://dart.dev)
+- [Flutter](https://flutter.dev)
+- [OTP RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238)
+- [HOTP RFC 4226](https://datatracker.ietf.org/doc/html/rfc4226)
 

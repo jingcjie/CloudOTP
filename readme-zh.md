@@ -1,115 +1,118 @@
-# 🔐 跨平台OTP认证器
+# CloudOTP Authenticator
 
-一个用Dart构建的多功能一次性密码（OTP）认证器应用程序(所有源代码可见)，支持多个平台，包括Windows、Linux、Web、Android、iOS和macOS。
+CloudOTP 是一个开源 TOTP/HOTP 认证器，支持 Windows 桌面端、Android 和 Web。它支持二维码导入/导出、本地存储模式，以及可选的云同步。
 
 [English README](./README.md)
-## 🤔 为什么开发这个项目？
 
-1. 每次我想输入验证码我都要去找我的手机，这些OTP验证器就不能好好考虑下桌面用户吗😒。
-2. 这些验证器都不能导出我之前的密钥，就像靠怀孕留住老公的小三一样🤐。
-3. 当然，我还是想要自动同步功能，这样我手机电脑都可以随时访问😁。
+CloudOTP 的重点是让你在电脑上也能方便地查看 OTP 验证码，同时尽量避免被某一个设备或某一个认证器应用锁定。
 
-## 🥳 测试过的平台
-### 支持
-<div style="display: flex; align-items: center; gap: 20px;">
-  <img src="https://github.com/fluidicon.png" alt="GitHub" width="48" height="48">
-  <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/01-nvidia-logo-vert-500x200-2c50-d.png" alt="NVIDIA" width="120" height="48">
-  <img src="https://www.cloudflare.com/img/logo-web-badges/cf-logo-on-white-bg.svg" alt="Cloudflare" width="96" height="48">
-  <img src="https://avatars.githubusercontent.com/u/17085531?s=200&v=4" alt="Nexus mod" width="48" height="48">
-  <img src="https://avatars.githubusercontent.com/u/22990620?s=200&v=4" alt="Parsec" width="48" height="48">
-  <img src="https://www.notion.so/front-static/logo-ios.png" alt="Notion" width="48" height="48">
-  <img src="https://avatars.githubusercontent.com/u/23211?s=200&v=4" alt="Heroku" width="48" height="48">
-  <img src="https://www.v2ex.com/static/img/v2ex@2x.png" alt="V2EX" width="96" height="48">
-  <img src="https://cdn.worldvectorlogo.com/logos/binance.svg" alt="Binance" width="96" height="48">
-</div>
+## 安装
 
+### Windows
 
-### 不支持的
-记得发起issue如果有某个特定平台可以使用otp软件，但该软件不支持的。
+从 Microsoft Store 安装 CloudOTP：
 
-## ✨ 功能特点（以下均为翻译🗣，可以不看了️）
+<a href="https://apps.microsoft.com/detail/9pld5r9rpwpx"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Store" width="142" height="52"></a>
 
-- 🖥️ 📱 跨平台支持：可在桌面、网页和移动设备上使用
-- 🔄 多设备同步：从任何设备访问您的OTP代码
-- 👥 用户友好界面：易于添加、管理和使用OTP代码
-- 🛡️ 安全：实现行业标准的OTP算法
-- 📱💻 二维码导出：为每个OTP生成二维码，方便转移到其他认证器应用
-- 💾 备份和恢复：将您的OTP设置保存为二维码，实现无忧备份
-## 🚀 开始使用
+### Web
 
-### 快速访问选项（这个可以看👌)
+直接访问 [https://cloudotp.top/](https://cloudotp.top/) 使用网页版。
 
-- 🌐 **网页版**：访问 [https://cloudotp.me/](https://cloudotp.me/) 直接在浏览器中使用OTP认证器。
-- 🏪 **微软商店（win10+)**: 一键下载安装。
-<a href='https://www.microsoft.com/store/apps/9pld5r9rpwpx?cid=storebadge&ocid=badge'><img src='https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png' alt='English badge' width='142px' height='52px'/></a>
-- 📥 **预编译版本**：如果您不想自己编译应用程序，可以从 [GitHub Releases 页面](https://github.com/jingcjie/cloud_otp/releases/latest) 下载预编译版本。（本人非苹果用户，mac,ios自己编译去哈😘/为什么不直接用web）
+### Android
 
-### 前提条件（用于从源代码编译）(非程序员止步😘)
+从 [GitHub Releases](https://github.com/jingcjie/CloudOTP/releases/latest) 下载 APK。
 
-- [Dart SDK](https://dart.dev/get-dart) 🎯
-- [Flutter](https://flutter.dev/docs/get-started/install) 💙 （用于移动和桌面版本构建）
+APK 选择建议：
 
-### 安装（从源代码）
+- `arm64-v8a`：大多数现代 Android 手机
+- `armeabi-v7a`：较老的 32 位 Android 手机
+- `x86_64`：模拟器和部分 Chromebook 设备
 
-1. 克隆仓库：
-   ```
-   git clone https://github.com/jingcjie/cloud_otp.git
-   ```
-2. 进入项目目录：
-   ```
-   cd cloud_otp
-   ```
-3. 安装依赖：
-   ```
-   dart pub get
-   ```
+CloudOTP 目前不再上架 Google Play。
 
-### 运行应用
+### 从源码运行
 
-- 网页版：
-  ```
-  flutter run -d chrome
-  ```
-- 桌面版（Windows/Linux/macOS）：
-  ```
-  flutter run -d windows
-  flutter run -d linux
-  flutter run -d macos
-  ```
-- 移动版（确保您已连接设备或模拟器）：
-  ```
-  flutter run
-  ```
+安装 [Flutter](https://flutter.dev/docs/get-started/install)，然后运行：
 
-## 💡 主要功能亮点
+```bash
+git clone https://github.com/jingcjie/CloudOTP.git
+cd CloudOTP
+flutter pub get
+```
 
-### 二维码导出和备份
+本地运行：
 
-该OTP认证器允许您将任何OTP设置导出为二维码。这个功能提供了几个好处：
+```bash
+flutter run -d windows
+flutter run -d chrome
+flutter run
+```
 
-1. 🔄 **轻松转移**：快速将您的OTP设置移动到另一个设备或认证器应用。
-2. 💾 **安全备份**：为所有OTP生成并保存二维码，作为一种万无一失的备份方法。
-3. 🔓 **无锁定**：您永远不会被困在这个app - 您的OTP设置始终是可移植的。
-4. 📸 **快速设置**：通过扫描保存的二维码轻松设置新设备。
+手动构建发布包：
 
-要使用此功能，只需选择要导出的OTP，然后选择"导出为二维码"选项。然后，您可以安全地保存二维码图像，或立即使用它在另一个应用程序中设置OTP。
+```bash
+flutter build apk --split-per-abi
+dart run msix:create
+flutter build web
+```
 
-## 👥 贡献
+## 功能
 
-欢迎贡献！请随时提交Pull Request。
+- Windows 桌面认证器，可从 Microsoft Store 安装
+- 支持 TOTP 和 HOTP 验证码
+- 支持二维码扫描、图片导入和手动添加账号
+- 支持二维码导出，便于备份、迁移到其他认证器
+- 支持本地存储模式
+- 支持可选云同步，用于备份和恢复
+- 支持亮色/暗色主题
+- 支持英文、中文、西班牙语、法语和德语界面
+- MIT 开源许可
 
-## 📄 许可证
+## 安全模型
 
-本项目采用 [MIT 许可证](LICENSE)。
+CloudOTP 支持本地模式和可选云同步。
 
-## 🙏 致谢
+本地模式下，OTP 数据保存在当前设备上。清除应用数据可能会删除本地保存的 OTP 条目，因此如果你只使用本地模式，请自行保留备份。
 
-- [Dart](https://dart.dev) 🎯
-- [Flutter](https://flutter.dev) 💙
-- [OTP RFC 6238](https://tools.ietf.org/html/rfc6238) 🔢
+云同步是可选功能。云端数据通过 Supabase 认证和 Row-Level Security 按账号隔离。云同步的客户端加密功能已列入计划，因此目前不要把云同步描述为端到端加密。
 
-## 📊 项目状态
+二维码导出用于避免锁定：你可以随时导出账号，并迁移到其他认证器。
 
-![GitHub stars](https://img.shields.io/github/stars/jingcjie/cloud_otp?style=social)
-![GitHub issues](https://img.shields.io/github/issues/jingcjie/cloud_otp)
+## 截图
 
+演示截图和 GIF 请只使用测试账号，不要展示真实密钥、真实邮箱或真实恢复码。素材目录：
+
+- [`docs/assets/screenshots/`](docs/assets/screenshots/)
+- [`docs/assets/gifs/`](docs/assets/gifs/)
+
+建议使用的演示账号：
+
+- Example Mail
+- Work Dashboard
+- CloudOTP Demo
+- Local Account
+
+## 兼容性
+
+当前发布目标：
+
+- Windows 10/11
+- GitHub Releases 提供的 Android APK
+- `cloudotp.top` 网页版
+
+Linux、macOS 和 iOS 目前不是正式发布目标。
+
+## 贡献
+
+欢迎提交 issue 或 pull request。
+
+## 许可证
+
+CloudOTP 使用 [MIT License](LICENSE)。
+
+## 致谢
+
+- [Dart](https://dart.dev)
+- [Flutter](https://flutter.dev)
+- [OTP RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238)
+- [HOTP RFC 4226](https://datatracker.ietf.org/doc/html/rfc4226)

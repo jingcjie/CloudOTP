@@ -218,6 +218,24 @@ abstract class AppLocalizations {
   /// **'Algorithm: {algorithm}'**
   String otpAlgorithmLabel(String algorithm);
 
+  /// No description provided for @hotpCounterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter: {counter}'**
+  String hotpCounterLabel(int counter);
+
+  /// No description provided for @hotpCopyAdvanceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy and advance'**
+  String get hotpCopyAdvanceTooltip;
+
+  /// No description provided for @hotpAdvanceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance counter'**
+  String get hotpAdvanceTooltip;
+
   /// No description provided for @manualInput.
   ///
   /// In en, this message translates to:

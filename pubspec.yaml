@@ -1,5 +1,5 @@
 name: cloud_otp
-description: "On cloud OTP."
+description: "Open-source TOTP/HOTP authenticator for Windows, Android, and Web."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -45,7 +45,6 @@ dependencies:
   mobile_scanner: ^5.2.1
   window_manager: ^0.4.2
   animations: ^2.0.11
-  sign_in_with_apple: ^6.0.1
   url_launcher: ^6.3.0
   intl: ^0.20.2
   
@@ -57,6 +56,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Used by tests to inject an in-memory SharedPreferencesAsync backend.
+  shared_preferences_platform_interface: ^2.4.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -68,7 +69,6 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  ios: true
   image_path: "./icon.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_foreground: "./icon.png"
@@ -76,15 +76,12 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "./icon.png"
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
+    background_color: "#ffffff"
+    theme_color: "#4caf50"
   windows:
     generate: true
     image_path: "./icon.png"
     icon_size: 256 # min:48, max:256, default: 48
-  macos:
-    generate: true
-    image_path: "./icon.png"
 
 msix_config:
   display_name: CloudOTP

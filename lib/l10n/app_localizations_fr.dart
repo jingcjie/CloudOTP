@@ -80,6 +80,17 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String hotpCounterLabel(int counter) {
+    return 'Compteur : $counter';
+  }
+
+  @override
+  String get hotpCopyAdvanceTooltip => 'Copier et avancer';
+
+  @override
+  String get hotpAdvanceTooltip => 'Avancer le compteur';
+
+  @override
   String get manualInput => 'Saisie manuelle';
 
   @override

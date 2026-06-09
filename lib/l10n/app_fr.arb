@@ -61,6 +61,16 @@
       }
     }
   },
+  "hotpCounterLabel": "Compteur : {counter}",
+  "@hotpCounterLabel": {
+    "placeholders": {
+      "counter": {
+        "type": "int"
+      }
+    }
+  },
+  "hotpCopyAdvanceTooltip": "Copier et avancer",
+  "hotpAdvanceTooltip": "Avancer le compteur",
   "manualInput": "Saisie manuelle",
   "qrScanner": "Lecteur QR",
   "manualInputTitle": "Saisie manuelle",

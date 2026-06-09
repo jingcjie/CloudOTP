@@ -78,6 +78,17 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String hotpCounterLabel(int counter) {
+    return '计数器：$counter';
+  }
+
+  @override
+  String get hotpCopyAdvanceTooltip => '复制并前进';
+
+  @override
+  String get hotpAdvanceTooltip => '前进计数器';
+
+  @override
   String get manualInput => '手动输入';
 
   @override
