@@ -1,12 +1,17 @@
 {
-    "name": "cloud_otp",
-    "short_name": "cloud_otp",
+    "name": "CloudOTP Authenticator",
+    "short_name": "CloudOTP",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#4caf50",
+    "description": "Open-source TOTP/HOTP authenticator for Windows desktop, Android, and Web with QR import/export and optional cloud sync.",
+    "orientation": "any",
+    "categories": [
+        "security",
+        "utilities",
+        "productivity"
+    ],
     "prefer_related_applications": false,
     "icons": [
         {
