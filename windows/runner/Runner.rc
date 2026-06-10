@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "cloud_otp" "\0"
+            VALUE "CompanyName", "JINGCJIE" "\0"
+            VALUE "FileDescription", "CloudOTP" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "cloud_otp" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
+            VALUE "InternalName", "CloudOTP" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 JINGCJIE. All rights reserved." "\0"
             VALUE "OriginalFilename", "cloud_otp.exe" "\0"
-            VALUE "ProductName", "cloud_otp" "\0"
+            VALUE "ProductName", "CloudOTP" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

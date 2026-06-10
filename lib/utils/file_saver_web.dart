@@ -1,16 +1,20 @@
-import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:js_interop';
+
+import 'package:web/web.dart' as web;
 
 Future<String?> saveOtpJsonImpl({
   required String suggestedName,
   required String contents,
 }) async {
-  final bytes = utf8.encode(contents);
-  final blob = html.Blob([bytes], 'application/json');
-  final url = html.Url.createObjectUrlFromBlob(blob);
-  html.AnchorElement(href: url)
-    ..setAttribute('download', suggestedName)
-    ..click();
-  html.Url.revokeObjectUrl(url);
+  final blob = web.Blob(
+    [contents.toJS].toJS,
+    web.BlobPropertyBag(type: 'application/json'),
+  );
+  final url = web.URL.createObjectURL(blob);
+  final anchor = web.document.createElement('a') as web.HTMLAnchorElement
+    ..href = url
+    ..download = suggestedName;
+  anchor.click();
+  web.URL.revokeObjectURL(url);
   return suggestedName;
 }

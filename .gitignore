@@ -52,6 +52,11 @@ app.*.symbols
 # Obfuscation
 app.*.map.json
 
+# Local signing/test artifacts
+*.local-test.msix
+*.pfx
+*.cer
+
 # Android
 **/android/**/.gradle/
 android/.gradle/

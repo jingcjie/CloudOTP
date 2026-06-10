@@ -37,7 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _changePassword(BuildContext context) async {
     final l10n = context.l10n;
-    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -59,13 +58,13 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => navigator.pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () async {
               if (_newPasswordController.text != _confirmPasswordController.text) {
-                context.showBeautifulSnackBar(
+                dialogContext.showBeautifulSnackBar(
                   message: l10n.passwordMismatch,
                   isError: true,
                 );
@@ -75,16 +74,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 await supabase.auth.updateUser(
                   UserAttributes(password: _newPasswordController.text),
                 );
-                if (mounted) {
-                  context.showBeautifulSnackBar(
+                if (dialogContext.mounted) {
+                  dialogContext.showBeautifulSnackBar(
                     message: l10n.passwordChangedSuccess,
                     isError: false,
                   );
-                  navigator.pop();
+                  Navigator.of(dialogContext).pop();
                 }
               } catch (error) {
-                if (mounted) {
-                  context.showBeautifulSnackBar(
+                if (dialogContext.mounted) {
+                  dialogContext.showBeautifulSnackBar(
                     message: l10n.unexpectedError('$error'),
                     isError: true,
                   );
@@ -250,10 +249,11 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _handleImport(AccountLinkController controller) async {
     final l10n = context.l10n;
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
+      if (!mounted) return;
       if (result == null) {
         return;
       }
@@ -263,6 +263,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
       if (!kIsWeb && file.path != null) {
         fileContents = await readOtpFile(file.path!);
+        if (!mounted) return;
       } else if (file.bytes != null) {
         fileContents = utf8.decode(file.bytes!);
       } else {
@@ -568,7 +569,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton.icon(
-                  onPressed: () => _openRepository(context),
+                  onPressed: _openRepository,
                   icon: const Icon(Icons.open_in_new),
                   label: Text(l10n.viewOnGithub),
                 ),
@@ -580,7 +581,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Future<void> _openRepository(BuildContext context) async {
+  Future<void> _openRepository() async {
     final l10n = context.l10n;
     final uri = Uri.parse('https://github.com/jingcjie/CloudOTP');
     try {

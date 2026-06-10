@@ -78,19 +78,6 @@ CloudOTP 支持本地模式和可选云同步。
 
 二维码导出用于避免锁定：你可以随时导出账号，并迁移到其他认证器。
 
-## 截图
-
-演示截图和 GIF 请只使用测试账号，不要展示真实密钥、真实邮箱或真实恢复码。素材目录：
-
-- [`docs/assets/screenshots/`](docs/assets/screenshots/)
-- [`docs/assets/gifs/`](docs/assets/gifs/)
-
-建议使用的演示账号：
-
-- Example Mail
-- Work Dashboard
-- CloudOTP Demo
-- Local Account
 
 ## 兼容性
 
@@ -100,7 +87,6 @@ CloudOTP 支持本地模式和可选云同步。
 - GitHub Releases 提供的 Android APK
 - `cloudotp.top` 网页版
 
-Linux、macOS 和 iOS 目前不是正式发布目标。
 
 ## 贡献
 

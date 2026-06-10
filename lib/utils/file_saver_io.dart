@@ -9,7 +9,7 @@ Future<String?> saveOtpJsonImpl({
   required String contents,
 }) async {
   if (Platform.isAndroid || Platform.isIOS) {
-    final result = await FilePicker.platform.saveFile(
+    final result = await FilePicker.saveFile(
       dialogTitle: 'Export OTP data',
       fileName: suggestedName,
       type: FileType.custom,
@@ -19,7 +19,7 @@ Future<String?> saveOtpJsonImpl({
     return result;
   }
 
-  final savePath = await FilePicker.platform.saveFile(
+  final savePath = await FilePicker.saveFile(
     dialogTitle: 'Export OTP data',
     fileName: suggestedName,
     type: FileType.custom,

@@ -271,7 +271,7 @@ class _ListViewPageState extends State<ListViewPage> {
 
   Future<String?> _webQRScanner() async {
     String? scanResult;
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.image,
       withData: true,
     );

@@ -12,8 +12,6 @@ Open-source TOTP/HOTP authenticator for Windows desktop, Android, and Web with Q
 
 CloudOTP is built for people who want OTP codes available on their PC without being locked into one device or one vendor. Use it as a Windows desktop authenticator, open the web version when needed, or install the Android APK from GitHub Releases.
 
-> Screenshots and demo GIFs are being prepared under `docs/assets/`.
-
 ## Install
 
 ### Windows
@@ -36,7 +34,6 @@ Choose the APK for your device:
 - `armeabi-v7a`: older 32-bit Android phones
 - `x86_64`: emulators and some Chromebook devices
 
-CloudOTP is no longer published on Google Play.
 
 ### Build from source
 
@@ -86,20 +83,6 @@ Cloud sync is optional. Cloud data is isolated per account with Supabase authent
 
 QR export is designed to prevent lock-in: you can export accounts and move them to another authenticator at any time.
 
-## Screenshots
-
-Demo screenshots and GIFs should use fake accounts only. See:
-
-- [`docs/assets/screenshots/`](docs/assets/screenshots/)
-- [`docs/assets/gifs/`](docs/assets/gifs/)
-
-Suggested demo accounts:
-
-- Example Mail
-- Work Dashboard
-- CloudOTP Demo
-- Local Account
-
 ## Compatibility
 
 Current release targets:
@@ -108,7 +91,6 @@ Current release targets:
 - Android APK from GitHub Releases
 - Web browser at `cloudotp.top`
 
-Linux, macOS, and iOS are not current published targets.
 
 ## Contributing
 

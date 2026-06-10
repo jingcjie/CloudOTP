@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.1.0+1
+version: 2.1.1+2
 
 environment:
   sdk: ^3.5.1
@@ -35,17 +35,18 @@ dependencies:
   provider: ^6.1.2
   supabase_flutter: ^2.0.6
   crypto: ^3.0.3
-  otp: 3.1.2
+  otp: ^3.2.0
   flutter_speed_dial: ^7.0.0
   shared_preferences: ^2.3.2
-  file_picker: ^8.1.4
+  file_picker: ^11.0.2
   image: ^4.0.17
   zxing2: ^0.2.0
   qr_flutter: ^4.1.0
-  mobile_scanner: ^5.2.1
-  window_manager: ^0.4.2
+  mobile_scanner: ^7.2.0
+  window_manager: ^0.5.1
   animations: ^2.0.11
   url_launcher: ^6.3.0
+  web: ^1.1.1
   intl: ^0.20.2
   
 
@@ -63,8 +64,8 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
-  flutter_launcher_icons: "^0.13.1"
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
   msix: ^3.16.8
 
 flutter_launcher_icons:
@@ -87,12 +88,12 @@ msix_config:
   display_name: CloudOTP
   publisher_display_name: JINGCJIE
   identity_name: JINGCJIE.31594FB165A1C
-  msix_version: 2.1.0.0
+  msix_version: 2.1.1.0
   logo_path: "./icon.png"
   capabilities: internetClient
   enable_at_startup: false
   store: true
-  languages: en, es, fr, de, zh
+  languages: en, es, fr, de, zh-CN
   publisher: CN=79F5182C-F623-427B-BB35-112212334FEE
 
 # For information on the generic Dart part of this file, see the
