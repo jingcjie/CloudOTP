@@ -20,6 +20,12 @@ Install CloudOTP from the Microsoft Store:
 
 <a href="https://apps.microsoft.com/detail/9pld5r9rpwpx"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Store" width="142" height="52"></a>
 
+You can also install it from Microsoft Store with `winget`:
+
+```powershell
+winget install --source msstore --id 9PLD5R9RPWPX --accept-source-agreements --accept-package-agreements
+```
+
 ### Web
 
 Use the browser version at [https://cloudotp.top/](https://cloudotp.top/).
@@ -106,4 +112,3 @@ CloudOTP is licensed under the [MIT License](LICENSE).
 - [Flutter](https://flutter.dev)
 - [OTP RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238)
 - [HOTP RFC 4226](https://datatracker.ietf.org/doc/html/rfc4226)
-

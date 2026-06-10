@@ -14,6 +14,12 @@ CloudOTP 的重点是让你在电脑上也能方便地查看 OTP 验证码，同
 
 <a href="https://apps.microsoft.com/detail/9pld5r9rpwpx"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Store" width="142" height="52"></a>
 
+也可以使用 `winget` 从 Microsoft Store 安装：
+
+```powershell
+winget install --source msstore --id 9PLD5R9RPWPX --accept-source-agreements --accept-package-agreements
+```
+
 ### Web
 
 直接访问 [https://cloudotp.top/](https://cloudotp.top/) 使用网页版。
