@@ -136,6 +136,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String deviceClockSkewWarning(int seconds) {
+    return '设备时间与服务器相差 $seconds 秒，OTP 代码可能错误。请同步系统时间。';
+  }
+
+  @override
   String get commonSubmit => '提交';
 
   @override

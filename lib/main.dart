@@ -10,39 +10,38 @@ import 'package:cloud_otp/l10n/app_localizations.dart';
 import 'utils/constants.dart';
 import 'controllers/account_link_controller.dart';
 import 'pages/main_page.dart';
+import 'models/snackbar.dart';
 import 'models/theme_provider.dart';
 import 'models/locale_provider.dart';
+import 'services/clock_skew_service.dart';
+import 'utils/l10n_extensions.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
     url: 'https://bclaahfvyffqzoqwwegd.supabase.co',
-    publishableKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjbGFhaGZ2eWZmcXpvcXd3ZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5MTcyMjcsImV4cCI6MjA0MDQ5MzIyN30.wAmbOCF70IcnqVylOUq9FqSzv3_pXcc7uEgVi7_qTQk',
+    publishableKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjbGFhaGZ2eWZmcXpvcXd3ZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5MTcyMjcsImV4cCI6MjA0MDQ5MzIyN30.wAmbOCF70IcnqVylOUq9FqSzv3_pXcc7uEgVi7_qTQk',
   );
-
-  // Keep the Supabase free-tier project from pausing after 7 days of inactivity:
-  // fire a lightweight, unconditional keep-alive ping on every launch (linked or
-  // not). Fire-and-forget — never blocks startup, never throws if offline/paused.
-  _pingKeepAlive();
 
   final accountController = AccountLinkController(
     supabaseClient: Supabase.instance.client,
     preferences: prefs,
   );
   await accountController.initialize();
-  if (!kIsWeb){
-    if(kIsWIN||kIsMAC||kIsLIN){
+  if (!kIsWeb) {
+    if (kIsWIN || kIsMAC || kIsLIN) {
       await windowManager.ensureInitialized();
       windowManager.waitUntilReadyToShow().then((_) async {
         await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
 
         // Restore window size and position from SharedPreferences
-        double width =  await prefs.getDouble('window_width') ?? 360.0;
+        double width = await prefs.getDouble('window_width') ?? 360.0;
         double height = await prefs.getDouble('window_height') ?? 720.0;
         await windowManager.setSize(Size(width, height));
 
-        double? x =  await prefs.getDouble('window_x') ?? 10.0;
+        double? x = await prefs.getDouble('window_x') ?? 10.0;
         double? y = await prefs.getDouble('window_y') ?? 10.0;
         await windowManager.setPosition(Offset(x, y));
 
@@ -52,31 +51,12 @@ Future<void> main() async {
       });
       windowManager.addListener(MyWindowListener());
     }
-
   }
 
   runApp(MyApp(accountController: accountController));
 }
 
-/// Resets the Supabase free-tier 7-day inactivity timer so the project is never
-/// auto-paused. Calls the `keep_alive()` RPC (granted to `anon`), which just
-/// returns `now()`. Silent and non-blocking: a short timeout keeps a slow/paused
-/// backend from leaving a dangling future, and all errors are swallowed.
-void _pingKeepAlive() {
-  unawaited(
-    supabase
-        .rpc('keep_alive')
-        .timeout(const Duration(seconds: 10))
-        .then(
-          (_) {},
-          onError: (Object e) => debugPrint('keep_alive ping failed (ignored): $e'),
-        ),
-  );
-}
-
 class MyWindowListener extends WindowListener {
-
-
   @override
   void onWindowResized() async {
     // This method is called when the window is resized
@@ -85,7 +65,7 @@ class MyWindowListener extends WindowListener {
     // Save size
     await prefs.setDouble('window_width', size.width);
     await prefs.setDouble('window_height', size.height);
-    }
+  }
 
   @override
   void onWindowMoved() async {
@@ -95,7 +75,7 @@ class MyWindowListener extends WindowListener {
     // Save position
     await prefs.setDouble('window_x', position.dx);
     await prefs.setDouble('window_y', position.dy);
-    }
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -163,12 +143,51 @@ class _MyAppState extends State<MyApp> {
               useMaterial3: true,
             ),
             themeMode: themeProvider.themeMode,
-            home: const AppShell(),
+            home: const StartupClockSkewNotifier(child: AppShell()),
           );
         },
       ),
     );
   }
+}
+
+class StartupClockSkewNotifier extends StatefulWidget {
+  const StartupClockSkewNotifier({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<StartupClockSkewNotifier> createState() =>
+      _StartupClockSkewNotifierState();
+}
+
+class _StartupClockSkewNotifierState extends State<StartupClockSkewNotifier> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_checkClockSkew());
+    });
+  }
+
+  Future<void> _checkClockSkew() async {
+    try {
+      final result = await checkSupabaseClockSkew(supabase);
+      if (!mounted || result == null) return;
+      final seconds = clockSkewWarningSeconds(result);
+      if (seconds == null) return;
+
+      context.showBeautifulSnackBar(
+        message: context.l10n.deviceClockSkewWarning(seconds),
+        isError: true,
+      );
+    } catch (e) {
+      debugPrint('Clock skew check failed (ignored): $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class AppShell extends StatelessWidget {
@@ -193,7 +212,10 @@ class AppShell extends StatelessWidget {
                       child: Icon(
                         Icons.drag_handle,
                         size: 24,
-                        color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
+                        color: Theme.of(context)
+                            .iconTheme
+                            .color
+                            ?.withValues(alpha: 0.5),
                       ),
                     ),
                   ),

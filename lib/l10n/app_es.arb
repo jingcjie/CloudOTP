@@ -93,6 +93,14 @@
       }
     }
   },
+  "deviceClockSkewWarning": "La hora del dispositivo difiere del servidor por {seconds}s. Los codigos OTP pueden ser incorrectos. Sincroniza la hora del sistema.",
+  "@deviceClockSkewWarning": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "commonSubmit": "Enviar",
   "confirmPullTitle": "Confirmar extracción de datos",
   "confirmPullMessage": "Esto sobrescribirá los datos almacenados localmente. ¿Continuar?",

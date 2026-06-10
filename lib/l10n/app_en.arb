@@ -93,6 +93,14 @@
       }
     }
   },
+  "deviceClockSkewWarning": "Device clock differs from server by {seconds}s. OTP codes may be wrong. Sync system time.",
+  "@deviceClockSkewWarning": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "commonSubmit": "Submit",
   "confirmPullTitle": "Confirm Pull Data",
   "confirmPullMessage": "This will overwrite the data stored locally. Continue?",

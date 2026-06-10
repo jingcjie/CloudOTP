@@ -93,6 +93,14 @@
       }
     }
   },
+  "deviceClockSkewWarning": "\u8bbe\u5907\u65f6\u95f4\u4e0e\u670d\u52a1\u5668\u76f8\u5dee {seconds} \u79d2\uff0cOTP \u4ee3\u7801\u53ef\u80fd\u9519\u8bef\u3002\u8bf7\u540c\u6b65\u7cfb\u7edf\u65f6\u95f4\u3002",
+  "@deviceClockSkewWarning": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "commonSubmit": "提交",
   "confirmPullTitle": "确认获取数据",
   "confirmPullMessage": "这将覆盖本地存储的数据。是否继续？",

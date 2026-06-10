@@ -326,6 +326,12 @@ abstract class AppLocalizations {
   /// **'Unexpected error: {error}'**
   String unexpectedError(String error);
 
+  /// No description provided for @deviceClockSkewWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Device clock differs from server by {seconds}s. OTP codes may be wrong. Sync system time.'**
+  String deviceClockSkewWarning(int seconds);
+
   /// No description provided for @commonSubmit.
   ///
   /// In en, this message translates to:

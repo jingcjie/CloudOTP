@@ -138,6 +138,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String deviceClockSkewWarning(int seconds) {
+    return 'Device clock differs from server by ${seconds}s. OTP codes may be wrong. Sync system time.';
+  }
+
+  @override
   String get commonSubmit => 'Submit';
 
   @override

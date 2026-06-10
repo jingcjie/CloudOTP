@@ -138,6 +138,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String deviceClockSkewWarning(int seconds) {
+    return 'Die Geraeteuhr weicht um ${seconds}s vom Server ab. OTP-Codes koennen falsch sein. Synchronisiere die Systemzeit.';
+  }
+
+  @override
   String get commonSubmit => 'Bestätigen';
 
   @override

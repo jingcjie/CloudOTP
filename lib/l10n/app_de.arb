@@ -93,6 +93,14 @@
       }
     }
   },
+  "deviceClockSkewWarning": "Die Geraeteuhr weicht um {seconds}s vom Server ab. OTP-Codes koennen falsch sein. Synchronisiere die Systemzeit.",
+  "@deviceClockSkewWarning": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "commonSubmit": "Bestätigen",
   "confirmPullTitle": "Datenübernahme bestätigen",
   "confirmPullMessage": "Dadurch werden lokal gespeicherte Daten überschrieben. Fortfahren?",
