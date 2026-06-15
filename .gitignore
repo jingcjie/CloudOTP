@@ -6,6 +6,10 @@ todo-later.md
 .env.local
 .env.*.local
 
+# Local Microsoft Store submission artifacts
+store-submission*.json
+store-release-notes.txt
+
 # Miscellaneous
 *.class
 *.log

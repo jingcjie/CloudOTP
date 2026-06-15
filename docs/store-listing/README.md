@@ -4,30 +4,40 @@ Use this as the source copy for the Partner Center listing refresh. Keep claims 
 
 ## Short Description
 
-Open-source TOTP/HOTP authenticator for Windows, Android, and Web. Use OTP codes on your PC, import or export QR backups, and choose local-only storage or optional cloud sync.
+Open-source TOTP/HOTP authenticator for Windows. Manage 2FA codes on your PC, import or export QR backups, and choose local-only storage or optional cloud sync.
 
 ## Full Description
 
-CloudOTP is an open-source authenticator for Windows users who want TOTP and HOTP codes available on their desktop, with companion access from Android and the Web.
+CloudOTP is an open-source authenticator for people who want their two-factor authentication codes available on a Windows PC without being locked into one device or one vendor.
 
-Add accounts by scanning QR codes or entering secrets manually. Generate TOTP codes, advance HOTP counters, organize your accounts, and switch between light and dark themes.
+Add accounts by scanning QR codes, importing QR images, or entering secrets manually. Generate TOTP codes for time-based 2FA, advance HOTP counters when needed, and keep your account list readable with a clean desktop interface and light or dark theme.
 
-CloudOTP supports local mode for device-only storage. Optional cloud sync can back up and restore your OTP list across devices. Cloud data is isolated per account, and client-side encryption for cloud sync is on the roadmap.
+CloudOTP supports local-only mode for device storage. Optional cloud sync can back up and restore your OTP list across devices, while keeping cloud data isolated per account. Client-side encryption for cloud sync is on the roadmap, so the app does not describe sync data as end-to-end encrypted yet.
 
-You are not locked in. Export accounts as QR codes so you can move them to another authenticator or keep an offline backup.
+Export is built in. You can save accounts as QR codes for offline backup, transfer them to another device, or move to another authenticator at any time.
 
-CloudOTP is MIT licensed and source-visible on GitHub.
+CloudOTP is MIT licensed and source-visible on GitHub. The app is designed to be practical, portable, and transparent about how your OTP data is handled.
 
 ## Feature List
 
-- TOTP and HOTP code generation
-- Windows desktop app from Microsoft Store
-- QR scan, image import, and manual account setup
-- QR export for backup and migration
-- Local-only mode with optional cloud sync
-- Open-source MIT licensed project
-- Light and dark themes
-- English, Chinese, Spanish, French, and German UI
+- TOTP and HOTP two-factor authentication codes
+- QR scanner, QR image import, and manual secret entry
+- QR export for backup, transfer, and migration
+- Local-only storage mode for device-only use
+- Optional account-based cloud sync for backup and restore
+- Clean Windows desktop interface with light and dark themes
+- English, Chinese, Spanish, French, and German interface
+- Open-source project licensed under MIT
+
+## Keywords
+
+- authenticator
+- otp
+- totp
+- hotp
+- 2fa
+- mfa
+- two factor authentication
 
 ## Screenshot Plan
 
@@ -44,4 +54,12 @@ Use fake/demo accounts only. Do not show real OTP secrets, real personal email a
 
 ## What's New Draft
 
-Refreshed Windows desktop experience, improved OTP account handling, HOTP support, QR export improvements, and updated localization.
+Refreshed Windows desktop experience, improved time checking, WebAssembly support, and updated OTP account handling.
+
+Prompt for codex to upload:
+Use the local Microsoft Store publishing flow for CloudOTP.
+msstore is already configured on this machine.
+Product ID: 9PLD5R9RPWPX.
+Build the MSIX, update the Store listing from docs/store-listing/README.md,
+generate "What's new" from commits since <tag>, upload to Partner Center,
+then stop at PendingCommit unless I explicitly say to publish.

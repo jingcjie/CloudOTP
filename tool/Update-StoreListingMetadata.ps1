@@ -124,11 +124,22 @@ function Read-ListingDraft {
         } |
         Where-Object { $_ }
   )
+  $keywordsSection = Get-MarkdownSection -Markdown $markdown -Heading "Keywords"
+  $keywords = @(
+    $keywordsSection -split '\r?\n' |
+        ForEach-Object {
+          if ($_ -match '^\s*-\s+(.+?)\s*$') {
+            $matches[1].Trim()
+          }
+        } |
+        Where-Object { $_ }
+  )
 
   $listing = [pscustomobject]@{
     ShortDescription = Get-MarkdownSection -Markdown $markdown -Heading "Short Description"
     Description = Get-MarkdownSection -Markdown $markdown -Heading "Full Description"
     Features = $features
+    Keywords = $keywords
   }
 
   if ($listing.ShortDescription.Length -gt 1000) {
@@ -143,6 +154,14 @@ function Read-ListingDraft {
   foreach ($feature in $listing.Features) {
     if ($feature.Length -gt 200) {
       throw "Feature '$feature' is $($feature.Length) characters; Store feature limit is 200."
+    }
+  }
+  if ($listing.Keywords.Count -gt 7) {
+    throw "Keywords has $($listing.Keywords.Count) items; Store search term limit is 7."
+  }
+  foreach ($keyword in $listing.Keywords) {
+    if ($keyword.Length -gt 30) {
+      throw "Keyword '$keyword' is $($keyword.Length) characters; Store search term limit is 30."
     }
   }
 
@@ -165,6 +184,23 @@ function Invoke-GitOutput {
   }
 
   return $output
+}
+
+function Format-ReleaseNoteSubject {
+  param([string]$Subject)
+
+  $formatted = ($Subject -replace '\s+', ' ').Trim()
+  $formatted = [regex]::Replace($formatted, '\bwasm\b', 'WebAssembly', 'IgnoreCase')
+  $formatted = [regex]::Replace($formatted, '\bui\b', 'UI', 'IgnoreCase')
+  $formatted = [regex]::Replace($formatted, '\botp\b', 'OTP', 'IgnoreCase')
+  $formatted = [regex]::Replace($formatted, '\btotp\b', 'TOTP', 'IgnoreCase')
+  $formatted = [regex]::Replace($formatted, '\bhotp\b', 'HOTP', 'IgnoreCase')
+
+  if ($formatted.Length -gt 0 -and $formatted[0] -cmatch '[a-z]') {
+    $formatted = $formatted.Substring(0, 1).ToUpperInvariant() + $formatted.Substring(1)
+  }
+
+  return $formatted
 }
 
 function Get-ReleaseNotes {
@@ -190,9 +226,10 @@ function Get-ReleaseNotes {
   $range = if ($resolvedFromRef) { "$resolvedFromRef..$ToRef" } else { $ToRef }
   $subjects = @(
     Invoke-GitOutput -Arguments @('log', '--no-merges', '--format=%s', '--reverse', $range) -AllowFailure |
-        ForEach-Object { ($_ -replace '\s+', ' ').Trim() } |
+        ForEach-Object { Format-ReleaseNoteSubject $_ } |
         Where-Object { $_ -and ($_ -notmatch '^Release\s+v?\d+(\.\d+)*') }
   )
+  $subjects = @($subjects | Select-Object -Unique)
 
   if ($subjects.Count -eq 0) {
     $subjects = @('Bug fixes and improvements.')
@@ -320,6 +357,9 @@ function Apply-PackagedMetadata {
     if ($ListingDraft.Features.Count -gt 0) {
       Set-JsonProperty -InputObject $baseListing -Name 'Features' -Value @($ListingDraft.Features)
     }
+    if ($ListingDraft.Keywords.Count -gt 0) {
+      Set-JsonProperty -InputObject $baseListing -Name 'Keywords' -Value @($ListingDraft.Keywords)
+    }
   }
 
   Write-Host "Updated packaged listing '$($listingEntry.Name)' with release notes."
@@ -369,6 +409,16 @@ function Apply-StoreMetadata {
     }
     if ($ListingDraft.Features.Count -gt 0) {
       Set-JsonProperty -InputObject $listing -Name 'productFeatures' -Value @($ListingDraft.Features)
+    }
+    if ($ListingDraft.Keywords.Count -gt 0) {
+      $keywordsProperty = Get-JsonProperty -InputObject $listing -Name 'keywords'
+      $searchTermsProperty = Get-JsonProperty -InputObject $listing -Name 'searchTerms'
+      if ($keywordsProperty) {
+        Set-JsonProperty -InputObject $listing -Name $keywordsProperty.Name -Value @($ListingDraft.Keywords)
+      }
+      elseif ($searchTermsProperty) {
+        Set-JsonProperty -InputObject $listing -Name $searchTermsProperty.Name -Value @($ListingDraft.Keywords)
+      }
     }
   }
 
