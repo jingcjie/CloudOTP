@@ -14,6 +14,7 @@ import 'models/snackbar.dart';
 import 'models/theme_provider.dart';
 import 'models/locale_provider.dart';
 import 'services/clock_skew_service.dart';
+import 'theme/app_theme.dart';
 import 'utils/l10n_extensions.dart';
 
 Future<void> main() async {
@@ -129,19 +130,8 @@ class _MyAppState extends State<MyApp> {
               }
               return const Locale('en');
             },
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-              brightness: Brightness.light,
-              useMaterial3: true,
-            ),
-            darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.green,
-                brightness: Brightness.dark,
-              ),
-              brightness: Brightness.dark,
-              useMaterial3: true,
-            ),
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
             themeMode: themeProvider.themeMode,
             home: const StartupClockSkewNotifier(child: AppShell()),
           );

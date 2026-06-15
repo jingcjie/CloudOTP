@@ -29,6 +29,7 @@
   },
   "otpListTitle": "OTP 列表",
   "emptyOtpListHint": "尚未添加 OTP。点击 + 按钮添加。",
+  "searchNoResults": "没有匹配的 OTP。",
   "otpCodeLabel": "OTP：{code}",
   "@otpCodeLabel": {
     "placeholders": {
@@ -194,6 +195,11 @@
   },
   "commonProceed": "继续",
   "linkAccount": "关联账户",
+  "settingsAccountSection": "账户",
+  "settingsSyncSection": "同步",
+  "settingsAppearanceSection": "外观",
+  "settingsDataSection": "数据",
+  "settingsDangerSection": "危险操作",
   "pullData": "获取数据",
   "backupData": "备份数据",
   "themeModeTitle": "主题模式",

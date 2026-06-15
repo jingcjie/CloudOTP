@@ -60,6 +60,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Aún no has añadido OTP. Pulsa el botón + para agregar uno.';
 
   @override
+  String get searchNoResults => 'No hay OTP que coincidan.';
+
+  @override
   String otpCodeLabel(String code) {
     return 'OTP: $code';
   }
@@ -278,6 +281,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get linkAccount => 'Vincular cuenta';
+
+  @override
+  String get settingsAccountSection => 'Cuenta';
+
+  @override
+  String get settingsSyncSection => 'Sincronización';
+
+  @override
+  String get settingsAppearanceSection => 'Apariencia';
+
+  @override
+  String get settingsDataSection => 'Datos';
+
+  @override
+  String get settingsDangerSection => 'Peligro';
 
   @override
   String get pullData => 'Extraer datos';

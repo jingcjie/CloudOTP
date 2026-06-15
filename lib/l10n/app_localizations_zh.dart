@@ -58,6 +58,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get emptyOtpListHint => '尚未添加 OTP。点击 + 按钮添加。';
 
   @override
+  String get searchNoResults => '没有匹配的 OTP。';
+
+  @override
   String otpCodeLabel(String code) {
     return 'OTP：$code';
   }
@@ -266,6 +269,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get linkAccount => '关联账户';
+
+  @override
+  String get settingsAccountSection => '账户';
+
+  @override
+  String get settingsSyncSection => '同步';
+
+  @override
+  String get settingsAppearanceSection => '外观';
+
+  @override
+  String get settingsDataSection => '数据';
+
+  @override
+  String get settingsDangerSection => '危险操作';
 
   @override
   String get pullData => '获取数据';

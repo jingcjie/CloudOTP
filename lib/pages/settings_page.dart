@@ -11,6 +11,7 @@ import '../controllers/account_link_controller.dart';
 import '../models/snackbar.dart';
 import '../models/theme_provider.dart';
 import '../models/locale_provider.dart';
+import '../theme/app_theme.dart';
 import '../utils/constants.dart';
 import '../utils/file_saver.dart';
 import '../utils/file_loader.dart';
@@ -26,7 +27,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -47,12 +49,14 @@ class _SettingsPageState extends State<SettingsPage> {
             TextField(
               controller: _newPasswordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: l10n.changePasswordNewLabel),
+              decoration:
+                  InputDecoration(labelText: l10n.changePasswordNewLabel),
             ),
             TextField(
               controller: _confirmPasswordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: l10n.changePasswordConfirmLabel),
+              decoration:
+                  InputDecoration(labelText: l10n.changePasswordConfirmLabel),
             ),
           ],
         ),
@@ -63,7 +67,8 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           TextButton(
             onPressed: () async {
-              if (_newPasswordController.text != _confirmPasswordController.text) {
+              if (_newPasswordController.text !=
+                  _confirmPasswordController.text) {
                 dialogContext.showBeautifulSnackBar(
                   message: l10n.passwordMismatch,
                   isError: true,
@@ -325,11 +330,13 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Text(l10n.commonCancel),
             ),
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(_ImportChoice.merge),
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(_ImportChoice.merge),
               child: Text(l10n.importMergeOption),
             ),
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(_ImportChoice.replace),
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(_ImportChoice.replace),
               child: Text(l10n.importReplaceOption),
             ),
           ],
@@ -400,7 +407,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final localeProvider = context.watch<LocaleProvider>();
     final l10n = context.l10n;
     final isLinked = controller.isLinked;
-    final currentLanguageCode = localeProvider.locale?.toLanguageTag() ?? 'system';
+    final currentLanguageCode =
+        localeProvider.locale?.toLanguageTag() ?? 'system';
     final languageOptions = <String, String>{
       'system': l10n.languageSystemDefault,
       'en': l10n.languageEnglish,
@@ -415,132 +423,354 @@ class _SettingsPageState extends State<SettingsPage> {
           ? null
           : FloatingActionButton.extended(
               onPressed: () => AccountLinkSheet.show(context),
-              icon: const Icon(Icons.cloud_queue),
+              icon: const Icon(Icons.cloud_queue_rounded),
               label: Text(l10n.linkAccount),
             ),
       body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
         children: [
-          _buildTopBanner(context, controller),
+          _buildAccountPanel(context, controller),
           if (!isLinked) _buildLinkPrompt(context),
-          if (isLinked) _buildCloudStatusRow(context, controller),
           if (isLinked)
-            ListTile(
-              leading: const Icon(Icons.lock),
-              title: Text(l10n.changePasswordTitle),
-              onTap: () => _changePassword(context),
+            _buildSettingsSection(
+              context,
+              title: l10n.settingsAccountSection,
+              children: [
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.lock_outline_rounded,
+                  title: l10n.changePasswordTitle,
+                  onTap: () => _changePassword(context),
+                ),
+              ],
             ),
           if (isLinked)
-            ListTile(
-              leading: const Icon(Icons.cloud_download),
-              title: Text(l10n.pullData),
-              onTap: controller.isLoading ? null : () => _handlePull(controller),
-              trailing: controller.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : null,
+            _buildSettingsSection(
+              context,
+              title: l10n.settingsSyncSection,
+              children: [
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.cloud_download_outlined,
+                  title: l10n.pullData,
+                  onTap: controller.isLoading
+                      ? null
+                      : () => _handlePull(controller),
+                  trailing: controller.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : null,
+                ),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.backup_outlined,
+                  title: l10n.backupData,
+                  onTap: controller.isLoading
+                      ? null
+                      : () => _handleBackup(controller),
+                ),
+              ],
             ),
-          if (isLinked)
-            ListTile(
-              leading: const Icon(Icons.backup),
-              title: Text(l10n.backupData),
-              onTap: controller.isLoading ? null : () => _handleBackup(controller),
-            ),
-          ListTile(
-            leading: const Icon(Icons.brightness_medium),
-            title: Text(l10n.themeModeTitle),
-            trailing: DropdownButtonHideUnderline(
-              child: DropdownButton<ThemeMode>(
-                value: themeProvider.themeMode,
-                borderRadius: BorderRadius.circular(12),
-                onChanged: (ThemeMode? newValue) {
-                  if (newValue != null) {
-                    themeProvider.setThemeMode(newValue);
-                  }
-                },
-                items: [
-                  DropdownMenuItem(
-                    value: ThemeMode.system,
-                    child: Text(l10n.themeSystem),
-                  ),
-                  DropdownMenuItem(
-                    value: ThemeMode.light,
-                    child: Text(l10n.themeLight),
-                  ),
-                  DropdownMenuItem(
-                    value: ThemeMode.dark,
-                    child: Text(l10n.themeDark),
-                  ),
-                ],
+          _buildSettingsSection(
+            context,
+            title: l10n.settingsAppearanceSection,
+            children: [
+              _buildSettingsTile(
+                context,
+                icon: Icons.brightness_medium_rounded,
+                title: l10n.themeModeTitle,
+                trailing: _buildThemeDropdown(context, themeProvider),
               ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: Text(l10n.languageSettingTitle),
-            subtitle: Text(l10n.languageSettingSubtitle),
-            trailing: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: languageOptions.containsKey(currentLanguageCode)
-                    ? currentLanguageCode
-                    : 'system',
-                borderRadius: BorderRadius.circular(12),
-                onChanged: (String? value) {
-                  if (value == null) return;
-                  if (value == 'system') {
-                    localeProvider.setLocale(null);
-                  } else {
-                    final selectedLocale = LocaleProvider.supportedLocales.firstWhere(
-                      (locale) => locale.toLanguageTag() == value,
-                      orElse: () => LocaleProvider.supportedLocales.first,
-                    );
-                    localeProvider.setLocale(selectedLocale);
-                  }
-                },
-                items: languageOptions.entries
-                    .map(
-                      (entry) => DropdownMenuItem<String>(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      ),
-                    )
-                    .toList(),
+              _buildSettingsTile(
+                context,
+                icon: Icons.language_rounded,
+                title: l10n.languageSettingTitle,
+                subtitle: l10n.languageSettingSubtitle,
+                trailing: _buildLanguageDropdown(
+                  context,
+                  localeProvider,
+                  currentLanguageCode,
+                  languageOptions,
+                ),
               ),
-            ),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.file_upload),
-            title: Text(l10n.exportData),
-            onTap: () => _handleExport(controller),
-          ),
-          ListTile(
-            leading: const Icon(Icons.file_download),
-            title: Text(l10n.importData),
-            onTap: () => _handleImport(controller),
+          _buildSettingsSection(
+            context,
+            title: l10n.settingsDataSection,
+            children: [
+              _buildSettingsTile(
+                context,
+                icon: Icons.upload_file_rounded,
+                title: l10n.exportData,
+                onTap: () => _handleExport(controller),
+              ),
+              _buildSettingsTile(
+                context,
+                icon: Icons.download_rounded,
+                title: l10n.importData,
+                onTap: () => _handleImport(controller),
+              ),
+            ],
           ),
           if (isLinked)
-            ListTile(
-              leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: Text(
-                l10n.deleteAllCloudData,
-                style: const TextStyle(color: Colors.red),
-              ),
-              onTap: controller.isLoading ? null : () => _handleDelete(controller),
-            ),
-          if (isLinked)
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: Text(
-                l10n.unlinkAccount,
-                style: const TextStyle(color: Colors.red),
-              ),
-              onTap: controller.isLoading ? null : () => _handleUnlink(controller),
+            _buildSettingsSection(
+              context,
+              title: l10n.settingsDangerSection,
+              children: [
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.delete_forever_rounded,
+                  title: l10n.deleteAllCloudData,
+                  onTap: controller.isLoading
+                      ? null
+                      : () => _handleDelete(controller),
+                  destructive: true,
+                ),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.logout_rounded,
+                  title: l10n.unlinkAccount,
+                  onTap: controller.isLoading
+                      ? null
+                      : () => _handleUnlink(controller),
+                  destructive: true,
+                ),
+              ],
             ),
           _buildAboutSection(context),
-          const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAccountPanel(
+    BuildContext context,
+    AccountLinkController controller,
+  ) {
+    final l10n = context.l10n;
+    final isLinked = controller.isLinked;
+    final title = isLinked
+        ? controller.linkedEmail ?? l10n.commonUnknown
+        : l10n.offlineMode;
+    final subtitle = isLinked ? l10n.connectedTo : l10n.workingOffline;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.border(context)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              isLinked ? Icons.cloud_done_rounded : Icons.shield_outlined,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.muted(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          _StatusPill(
+            label: isLinked ? l10n.linkedBadge : l10n.offlineMode,
+            linked: isLinked,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(
+    BuildContext context, {
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 8),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: AppColors.muted(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          Material(
+            color: AppColors.surface(context),
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(color: AppColors.border(context)),
+            ),
+            child: Column(
+              children: [
+                for (var index = 0; index < children.length; index++) ...[
+                  children[index],
+                  if (index != children.length - 1)
+                    Divider(indent: 64, color: AppColors.border(context)),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    VoidCallback? onTap,
+    bool destructive = false,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final accent = destructive ? colorScheme.error : colorScheme.primary;
+    final enabled = onTap != null || trailing != null;
+
+    return ListTile(
+      enabled: enabled,
+      minLeadingWidth: 40,
+      leading: _SettingsIcon(icon: icon, color: accent),
+      title: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: destructive ? colorScheme.error : null,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+      trailing: trailing,
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildThemeDropdown(
+    BuildContext context,
+    ThemeProvider themeProvider,
+  ) {
+    final l10n = context.l10n;
+    return SizedBox(
+      width: 128,
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<ThemeMode>(
+          value: themeProvider.themeMode,
+          isExpanded: true,
+          borderRadius: BorderRadius.circular(8),
+          onChanged: (ThemeMode? newValue) {
+            if (newValue != null) {
+              themeProvider.setThemeMode(newValue);
+            }
+          },
+          items: [
+            DropdownMenuItem(
+              value: ThemeMode.system,
+              child: Text(l10n.themeSystem, overflow: TextOverflow.ellipsis),
+            ),
+            DropdownMenuItem(
+              value: ThemeMode.light,
+              child: Text(l10n.themeLight, overflow: TextOverflow.ellipsis),
+            ),
+            DropdownMenuItem(
+              value: ThemeMode.dark,
+              child: Text(l10n.themeDark, overflow: TextOverflow.ellipsis),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageDropdown(
+    BuildContext context,
+    LocaleProvider localeProvider,
+    String currentLanguageCode,
+    Map<String, String> languageOptions,
+  ) {
+    return SizedBox(
+      width: 150,
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: languageOptions.containsKey(currentLanguageCode)
+              ? currentLanguageCode
+              : 'system',
+          isExpanded: true,
+          borderRadius: BorderRadius.circular(8),
+          onChanged: (String? value) {
+            if (value == null) return;
+            if (value == 'system') {
+              localeProvider.setLocale(null);
+            } else {
+              final selectedLocale = LocaleProvider.supportedLocales.firstWhere(
+                (locale) => locale.toLanguageTag() == value,
+                orElse: () => LocaleProvider.supportedLocales.first,
+              );
+              localeProvider.setLocale(selectedLocale);
+            }
+          },
+          items: languageOptions.entries
+              .map(
+                (entry) => DropdownMenuItem<String>(
+                  value: entry.key,
+                  child: Text(entry.value, overflow: TextOverflow.ellipsis),
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
@@ -548,34 +778,39 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildAboutSection(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.aboutTitle,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      padding: const EdgeInsets.only(top: 18),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border(context)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.aboutTitle,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.aboutDescription,
+              style: TextStyle(
+                color: AppColors.muted(context),
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.aboutDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: _openRepository,
+                icon: const Icon(Icons.open_in_new_rounded),
+                label: Text(l10n.viewOnGithub),
               ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton.icon(
-                  onPressed: _openRepository,
-                  icon: const Icon(Icons.open_in_new),
-                  label: Text(l10n.viewOnGithub),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -585,7 +820,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final l10n = context.l10n;
     final uri = Uri.parse('https://github.com/jingcjie/CloudOTP');
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final launched =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!mounted) return;
       if (!launched) {
         context.showBeautifulSnackBar(
@@ -602,129 +838,106 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Widget _buildTopBanner(BuildContext context, AccountLinkController controller) {
-    final l10n = context.l10n;
-    final isLinked = controller.isLinked;
-    final subtitle = isLinked ? controller.linkedEmail ?? '' : l10n.offlineMode;
-
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Theme.of(context).primaryColorLight,
-            Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Icon(
-              Icons.account_circle,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.7),
-            ),
-          ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isLinked ? l10n.connectedTo : l10n.workingOffline,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  subtitle.isEmpty ? l10n.appTitle : subtitle,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (isLinked)
-            Positioned(
-              top: 20,
-              right: 20,
-              child: Chip(
-                avatar: const Icon(Icons.cloud_done, color: Colors.white, size: 16),
-                backgroundColor: Colors.green.withValues(alpha: 0.8),
-                label: Text(
-                  l10n.linkedBadge,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildLinkPrompt(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.linkPromptTitle,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.linkPromptDescription,
-              ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: () => AccountLinkSheet.show(context),
-                  icon: const Icon(Icons.cloud_queue),
-                  label: Text(l10n.linkNow),
-                ),
-              ),
-            ],
-          ),
+      padding: const EdgeInsets.only(top: 12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.elevated(context),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border(context)),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCloudStatusRow(BuildContext context, AccountLinkController controller) {
-    final l10n = context.l10n;
-    final email = controller.linkedEmail ?? l10n.commonUnknown;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          const Icon(Icons.cloud_done, color: Colors.green),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              l10n.cloudAccountLinkedAs(email),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.linkPromptTitle,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              l10n.linkPromptDescription,
+              style: TextStyle(
+                color: AppColors.muted(context),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: () => AccountLinkSheet.show(context),
+                icon: const Icon(Icons.cloud_queue_rounded),
+                label: Text(l10n.linkNow),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 enum _ImportChoice { merge, replace }
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({
+    required this.label,
+    required this.linked,
+  });
+
+  final String label;
+  final bool linked;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = linked
+        ? Theme.of(context).colorScheme.primary
+        : AppColors.muted(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: linked ? 0.16 : 0.10),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.26)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsIcon extends StatelessWidget {
+  const _SettingsIcon({
+    required this.icon,
+    required this.color,
+  });
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, color: color, size: 20),
+    );
+  }
+}

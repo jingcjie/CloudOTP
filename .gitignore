@@ -2,6 +2,10 @@
 todo.md
 todo-later.md
 
+# Local secrets
+.env.local
+.env.*.local
+
 # Miscellaneous
 *.class
 *.log
@@ -60,6 +64,7 @@ app.*.map.json
 # Android
 **/android/**/.gradle/
 android/.gradle/
+android/.kotlin/
 android/app/google-services.json
 android/app/google-services-prod.json
 android/app/*.keystore

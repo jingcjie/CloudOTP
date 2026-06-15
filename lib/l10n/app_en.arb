@@ -29,6 +29,7 @@
   },
   "otpListTitle": "OTP List",
   "emptyOtpListHint": "No OTPs added yet. Tap the + button to add one.",
+  "searchNoResults": "No matching OTPs.",
   "otpCodeLabel": "OTP: {code}",
   "@otpCodeLabel": {
     "placeholders": {
@@ -194,6 +195,11 @@
   },
   "commonProceed": "Proceed",
   "linkAccount": "Link account",
+  "settingsAccountSection": "Account",
+  "settingsSyncSection": "Sync",
+  "settingsAppearanceSection": "Appearance",
+  "settingsDataSection": "Data",
+  "settingsDangerSection": "Danger",
   "pullData": "Pull Data",
   "backupData": "Backup Data",
   "themeModeTitle": "Theme Mode",

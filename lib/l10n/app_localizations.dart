@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'No OTPs added yet. Tap the + button to add one.'**
   String get emptyOtpListHint;
 
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching OTPs.'**
+  String get searchNoResults;
+
   /// No description provided for @otpCodeLabel.
   ///
   /// In en, this message translates to:
@@ -553,6 +559,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Link account'**
   String get linkAccount;
+
+  /// No description provided for @settingsAccountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsAccountSection;
+
+  /// No description provided for @settingsSyncSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get settingsSyncSection;
+
+  /// No description provided for @settingsAppearanceSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearanceSection;
+
+  /// No description provided for @settingsDataSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsDataSection;
+
+  /// No description provided for @settingsDangerSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger'**
+  String get settingsDangerSection;
 
   /// No description provided for @pullData.
   ///

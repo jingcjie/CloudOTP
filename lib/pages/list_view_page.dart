@@ -1,4 +1,5 @@
 import 'package:cloud_otp/controllers/account_link_controller.dart';
+import 'package:cloud_otp/theme/app_theme.dart';
 import 'package:cloud_otp/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class ListViewPage extends StatefulWidget {
 class _ListViewPageState extends State<ListViewPage> {
   AccountLinkController? _controller;
   List<String> _cachedUris = <String>[];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  String _searchQuery = '';
 
   @override
   void didChangeDependencies() {
@@ -42,6 +46,7 @@ class _ListViewPageState extends State<ListViewPage> {
   @override
   void dispose() {
     _controller?.removeListener(_onControllerChanged);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -106,48 +111,63 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   Future<void> _updateOtp(int index, String uri) async {
-    await _controller?.updateOtpAt(index, uri);
+    try {
+      await _controller?.updateOtpAt(index, uri);
+    } catch (e) {
+      if (!mounted) return;
+      context.showBeautifulSnackBar(
+        message: context.l10n.unexpectedError('$e'),
+        isError: true,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final visibleEntries = _visibleEntries();
     return Scaffold(
-      appBar: GradientAppBar(title: l10n.otpListTitle),
+      appBar: _buildAppBar(context),
       body: _cachedUris.isEmpty
-          ? Center(child: Text(l10n.emptyOtpListHint))
-          : ListView.builder(
-              itemCount: _cachedUris.length,
-              itemBuilder: (context, index) {
-                final uri = _cachedUris[index];
-                OtpItem item;
-                try {
-                  item = OtpItem.fromUri(uri);
-                } catch (e) {
-                  return _buildErrorTile(index);
-                }
-                return OtpListTile(
-                  key: ValueKey('otp:${item.identityKey}:$index'),
-                  item: item,
-                  onExport: () => _exportOtp(context, index),
-                  onDelete: () => _deleteOtp(index),
-                  onCopy: _copyOtp,
-                  onCounterChanged: (newUri) => _updateOtp(index, newUri),
-                );
-              },
-            ),
+          ? _EmptyOtpState(message: l10n.emptyOtpListHint)
+          : visibleEntries.isEmpty
+              ? _EmptyOtpState(message: l10n.searchNoResults)
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 8, bottom: 96),
+                  itemCount: visibleEntries.length,
+                  itemBuilder: (context, visibleIndex) {
+                    final entry = visibleEntries[visibleIndex];
+                    final uri = entry.uri;
+                    final index = entry.index;
+                    OtpItem item;
+                    try {
+                      item = OtpItem.fromUri(uri);
+                    } catch (e) {
+                      return _buildErrorTile(index);
+                    }
+                    return OtpListTile(
+                      key: ValueKey('otp:${item.identityKey}:$index'),
+                      item: item,
+                      onExport: () => _exportOtp(context, index),
+                      onDelete: () => _deleteOtp(index),
+                      onCopy: _copyOtp,
+                      onCounterChanged: (newUri) => _updateOtp(index, newUri),
+                    );
+                  },
+                ),
       floatingActionButton: SpeedDial(
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        icon: Icons.add_rounded,
+        activeIcon: Icons.close_rounded,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         children: [
           SpeedDialChild(
-            child: const Icon(Icons.input),
+            child: const Icon(Icons.keyboard_alt_outlined),
             label: l10n.manualInput,
             onTap: _manualInput,
           ),
           SpeedDialChild(
-            child: const Icon(Icons.qr_code_scanner),
+            child: const Icon(Icons.qr_code_scanner_rounded),
             label: l10n.qrScanner,
             onTap: _qrScanner,
           ),
@@ -156,18 +176,102 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final l10n = context.l10n;
+    final material = MaterialLocalizations.of(context);
+    return AppBar(
+      titleSpacing: 20,
+      title: _isSearching
+          ? TextField(
+              controller: _searchController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: material.searchFieldLabel,
+                filled: false,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (value) => setState(() => _searchQuery = value),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.appTitle),
+                Text(
+                  l10n.otpListTitle,
+                  style: TextStyle(
+                    color: AppColors.muted(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+      actions: [
+        IconButton(
+          tooltip: _isSearching
+              ? material.closeButtonTooltip
+              : material.searchFieldLabel,
+          icon: Icon(
+            _isSearching ? Icons.close_rounded : Icons.search_rounded,
+          ),
+          onPressed: _toggleSearch,
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+        _searchQuery = '';
+      }
+    });
+  }
+
+  List<_OtpListEntry> _visibleEntries() {
+    final query = _searchQuery.trim().toLowerCase();
+    final entries = <_OtpListEntry>[];
+    for (var index = 0; index < _cachedUris.length; index++) {
+      final uri = _cachedUris[index];
+      if (_matchesSearch(uri, query)) {
+        entries.add(_OtpListEntry(index: index, uri: uri));
+      }
+    }
+    return entries;
+  }
+
+  bool _matchesSearch(String uri, String query) {
+    if (query.isEmpty) return true;
+    try {
+      final item = OtpItem.fromUri(uri);
+      return '${item.label} ${item.issuer} ${item.type.name}'
+          .toLowerCase()
+          .contains(query);
+    } catch (_) {
+      return uri.toLowerCase().contains(query);
+    }
+  }
+
   /// Renders a row for an entry whose URI could not be parsed, so one bad entry
   /// can be removed without the whole list failing to load.
   Widget _buildErrorTile(int index) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 16),
       child: ListTile(
-        leading: const Icon(Icons.error_outline),
+        leading: Icon(
+          Icons.error_outline_rounded,
+          color: Theme.of(context).colorScheme.error,
+        ),
         title: Text(context.l10n.otpErrorPlaceholder),
         trailing: IconButton(
-          icon: const Icon(Icons.delete),
+          icon: const Icon(Icons.delete_outline_rounded),
           onPressed: () => _deleteOtp(index),
         ),
       ),
@@ -277,10 +381,24 @@ class _ListViewPageState extends State<ListViewPage> {
     );
 
     if (result != null) {
-      final Uint8List fileBytes = result.files.first.bytes!;
-      final img.Image? image = img.decodeImage(fileBytes);
-      if (image != null) {
-        scanResult = _processQRCodeImage(image);
+      final fileBytes = result.files.first.bytes;
+      if (fileBytes == null) {
+        if (mounted) {
+          context.showBeautifulSnackBar(
+            message: context.l10n.unableToReadFile,
+            isError: true,
+          );
+        }
+        return null;
+      }
+
+      try {
+        final img.Image? image = img.decodeImage(fileBytes);
+        if (image != null) {
+          scanResult = _processQRCodeImage(image);
+        }
+      } catch (e) {
+        debugPrint('Error decoding selected QR image: $e');
       }
     }
     return scanResult;
@@ -345,38 +463,47 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 }
 
-class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final List<Widget>? actions;
-
-  const GradientAppBar({
-    super.key,
-    required this.title,
-    this.actions,
+class _OtpListEntry {
+  const _OtpListEntry({
+    required this.index,
+    required this.uri,
   });
+
+  final int index;
+  final String uri;
+}
+
+class _EmptyOtpState extends StatelessWidget {
+  const _EmptyOtpState({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade800.withValues(alpha: 0.9),
-            Colors.green.shade700.withValues(alpha: 0.9),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.password_rounded,
+              size: 42,
+              color: AppColors.muted(context),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.muted(context),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),
-      child: AppBar(
-        title: Text(title),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        actions: actions,
-      ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

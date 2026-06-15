@@ -60,6 +60,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Noch keine OTPs hinzugefügt. Tippe auf die +-Taste, um eines hinzuzufügen.';
 
   @override
+  String get searchNoResults => 'Keine passenden OTPs.';
+
+  @override
   String otpCodeLabel(String code) {
     return 'OTP: $code';
   }
@@ -276,6 +279,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get linkAccount => 'Konto verknüpfen';
+
+  @override
+  String get settingsAccountSection => 'Konto';
+
+  @override
+  String get settingsSyncSection => 'Synchronisierung';
+
+  @override
+  String get settingsAppearanceSection => 'Darstellung';
+
+  @override
+  String get settingsDataSection => 'Daten';
+
+  @override
+  String get settingsDangerSection => 'Gefahr';
 
   @override
   String get pullData => 'Daten abrufen';

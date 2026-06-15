@@ -29,6 +29,7 @@
   },
   "otpListTitle": "Liste des OTP",
   "emptyOtpListHint": "Aucun OTP ajouté pour le moment. Appuyez sur le bouton + pour en ajouter un.",
+  "searchNoResults": "Aucun OTP correspondant.",
   "otpCodeLabel": "OTP : {code}",
   "@otpCodeLabel": {
     "placeholders": {
@@ -194,6 +195,11 @@
   },
   "commonProceed": "Continuer",
   "linkAccount": "Associer un compte",
+  "settingsAccountSection": "Compte",
+  "settingsSyncSection": "Synchronisation",
+  "settingsAppearanceSection": "Apparence",
+  "settingsDataSection": "Données",
+  "settingsDangerSection": "Danger",
   "pullData": "Récupérer les données",
   "backupData": "Sauvegarde",
   "themeModeTitle": "Mode thème",

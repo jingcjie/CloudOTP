@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Cloud OTP"
-#define MyAppVersion "1.1"
+#define MyAppVersion "2.2.0"
 #define MyAppPublisher "Jie"
 #define MyAppURL "https://github.com/jingcjie/cloud_otp"
 #define MyAppExeName "cloud_otp.exe"
